@@ -2,16 +2,16 @@
 
 Personal OpenCode skills collection (GPL-3.0, see `LICENSE`).
 
-Layout is `opencode/<skill>/SKILL.md`; nesting allowed
-(e.g. `opencode/git/conventionalcommits/SKILL.md`).
+Layout is `opencode/<skill>/SKILL.md`, flat — no nesting (OpenCode v1
+discovers a single level).
 
 ## Skills
 
 | Skill                                            | What it does                                                        |
 | ------------------------------------------------ | ------------------------------------------------------------------- |
 | [chezmoi](opencode/chezmoi/SKILL.md)              | Manage dotfiles with chezmoi: safe apply workflow, templates, scripts, secrets |
-| [conventionalcommits](opencode/git/conventionalcommits/SKILL.md) | Write Conventional Commits messages: types, scopes, breaking changes, splitting |
-| [commit](opencode/git/commit/SKILL.md) | Stage and commit proactively, one commit per logical unit; local amend/fixup |
+| [conventionalcommits](opencode/conventionalcommits/SKILL.md) | Write Conventional Commits messages: types, scopes, breaking changes, splitting |
+| [commit](opencode/commit/SKILL.md) | Stage and commit proactively, one commit per logical unit; local amend/fixup |
 | [skill](opencode/skill/SKILL.md)                 | Write, review, and test OpenCode skills: frontmatter, selectivity, output contract, 4-case testing |
 
 ## Use these skills

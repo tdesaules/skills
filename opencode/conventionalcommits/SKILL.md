@@ -134,7 +134,7 @@ Refs: 676104e, a215868
 
 ## Registration note
 
-This file lives at `opencode/git/conventionalcommits/SKILL.md`, outside OpenCode's default scan paths. Register it in `opencode.json`:
+This file lives at `opencode/conventionalcommits/SKILL.md`, outside OpenCode's default scan paths. Register it in `opencode.json`:
 
 ```json
 { "$schema": "https://opencode.ai/config.json",
