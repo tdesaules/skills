@@ -1,6 +1,11 @@
 ---
 name: chezmoi
-description: Manage dotfiles with chezmoi (add, edit, status, diff, apply, update, templates, scripts). Use when editing dotfiles, chezmoi source state, .tmpl files, .chezmoiscripts, or .chezmoiexternal.
+description: |-
+  Manage dotfiles with chezmoi (add, edit, status, diff, apply, update, templates, scripts). Use when editing dotfiles, chezmoi source state, .tmpl files, .chezmoiscripts, or .chezmoiexternal.
+  Examples:
+  - user: "add my gitconfig to chezmoi" → chezmoi add plus template decision
+  - user: "preview what chezmoi would change" → status then diff before apply
+  - user: "make this config host-specific" → .tmpl plus .chezmoidata pattern
 license: GPL-3.0-or-later
 compatibility: opencode
 metadata:
@@ -10,7 +15,18 @@ metadata:
 
 # Chezmoi
 
-Use ONLY for chezmoi-managed dotfiles. Not for bare-git or symlink-only setups.
+## What I do
+
+- Guide the safe chezmoi workflow: `doctor`, `status`, `diff`, then `apply`
+- Explain source state attributes (`dot_`, `private_`, `executable_`, `run_*`, `.tmpl`)
+- Help write templates, `run_onchange_`/`run_once_` scripts, externals, and secret handling
+- Provide copy-pasteable commands for daily dotfile operations
+
+## When to use me
+
+Use me when editing dotfiles, the chezmoi source state, `.tmpl` files, `.chezmoiscripts`, or `.chezmoiexternal`.
+Use ONLY for chezmoi-managed dotfiles, not for bare-git or symlink-only setups.
+Ask clarifying questions if it is unclear whether the files are chezmoi-managed or which target machine is concerned.
 
 ## Concepts
 
