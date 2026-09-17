@@ -12,6 +12,7 @@ discovers a single level).
 | [chezmoi](opencode/chezmoi/SKILL.md)              | Manage dotfiles with chezmoi: safe apply workflow, templates, scripts, secrets |
 | [conventionalcommits](opencode/conventionalcommits/SKILL.md) | Write Conventional Commits messages: types, scopes, breaking changes, splitting |
 | [commit](opencode/commit/SKILL.md) | Stage and commit proactively, one commit per logical unit; local amend/fixup |
+| [container](opencode/container/SKILL.md) | Containerfile/compose/OCI images with podman, buildah, skopeo: multi-stage, scratch/distroless, rootless hardening, Quadlet |
 | [skill](opencode/skill/SKILL.md)                 | Write, review, and test OpenCode skills: frontmatter, selectivity, output contract, 4-case testing |
 
 ## Use these skills
