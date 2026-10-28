@@ -35,5 +35,5 @@ Skills repo (GPL-3.0). Layout: `opencode/<skill>/SKILL.md`, flat — no nesting
 - Commit workflow (inspect, stage per unit, verify, amend/fixup): see
   `opencode/commit/SKILL.md`. Proactive commits allowed, but stop on
   empty diff, secrets, hook failure, or pushed history.
-- Commit only when explicitly requested. **Never push** — user pushes manually.
+- **Never push** — user pushes manually.
 - When adding a skill, also add its row to `README.md`.
