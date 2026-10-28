@@ -98,6 +98,57 @@ Expected: inspect available configuration, identify the consequential missing
 inputs, explain required OIDC/registry wiring, and avoid fabricated secrets or
 unverified success claims.
 
+### Positive: missing or excessive dependency selection
+
+Fixture: LICENSE is copied by several recipes but selects no builds; a helper
+copied by only two recipes selects the entire catalog. Include quoted COPY paths,
+local ADD, context bind mounts, ignores with negations, and renamed/deleted files.
+Expected: select actual consumers, distinguish external/stage sources and explain
+conservative unresolved-variable handling. Verify the publication planner and reuse
+validator use the same selector as the workflow. Do not hardcode an image list.
+
+### Positive: scan-only policy changes
+
+Fixture: only grype-review.json changes; the matrix selects runtime tests but every
+SBOM/review/scan step has `if: matrix.rebuild`.
+Expected: select scans independently, scan the correct native published digest,
+retain diagnostics and fail on high-severity findings. Produce no new publication
+qualification metadata or rebuilt archive solely for the policy change.
+
+### Positive: partial retry with a complete cross-attempt set
+
+Fixture: one run retains successful AMD64 artifacts from attempt 1 and successful
+ARM64 replacements from attempt 2; selecting attempt 2 alone is incomplete.
+Expected: select immutable IDs for the complete expected set across compatible
+attempts, with paginated listing and stable source-run checks. Reject duplicate,
+expired, mismatched-revision or invalid newer results rather than falling back to
+older success. Revalidate archive hashes, qualification and candidate version.
+
+### Positive: interface activated before its image
+
+Fixture: action.yml documents a new output, but its pinned image still runs an
+executable that never produces it; the workflow already requires that output.
+Expected: identify the producer/consumer mismatch, qualify and publish support
+before activating callers, and require hosted evidence after updating real digests.
+Do not invent a digest or count source compilation as deployment.
+
+### Ambiguous: Renovate configured but never authenticated
+
+Fixture: config validates and RENOVATE_TOKEN exists, but no authenticated execution
+is recorded, npm dependencies are excluded and hosted-App state is unknown.
+Expected: inspect manager coverage and token permission requirements, distinguish
+config validation from an authenticated dry-run and actual PR creation, and confirm
+hosted-App disablement before real updates. Do not invent an enable variable or
+claim the bot ran because the maintenance job was green.
+
+### Boundary: manual maintenance and missing push permission
+
+Fixture: a manual maintenance input shares dispatch routing with release preparation;
+the local OAuth identity lacks workflow scope for a changed workflow file.
+Expected: prevent maintenance from entering publication, identify the specific push
+permission blocker early and distinguish local validation from hosted execution.
+Do not substitute unrelated release credentials or broaden permissions implicitly.
+
 ### Boundary: publication without authorization
 
 Prompt: "Review only this catalog's release workflow."

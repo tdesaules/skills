@@ -10,6 +10,18 @@ Keep necessary tool configurations at the root. Reject duplicate owners and
 missing source relationships; incidental Containerfiles are not automatically
 publishable actions. State any conservative fallback for unresolved dependencies.
 
+Parse local COPY/ADD sources, including JSON/quoted paths, spaces, wildcards and
+directories, and RUN bind mounts sourced from the build context. Distinguish these
+from remote ADD downloads and COPY/mount sources referring to another stage or
+image. Apply the builder's ignore-file precedence and negation semantics. Include
+deleted source paths and both sides of renames without requiring the old file to
+exist. Select conservatively when variable sources cannot be resolved; do not
+silently omit dependencies. Test root files such as LICENSE as well as shared code.
+
+Use the same current selector implementation in matrix generation, publication
+planning and artifact-reuse validation. A planner carrying a stale embedded selector
+can disagree with the workflow even when both validate successfully in isolation.
+
 Selection policy:
 
 | Change/event | Selection |
@@ -17,6 +29,7 @@ Selection policy:
 | Image recipe/dependency | That image, its tests and action integration |
 | Action metadata only | Native tests against the published digest, without rebuilding |
 | Tool configuration | Its relevant checks/tests |
+| Vulnerability policy/review | Affected published-image scans, without rebuilding unless build inputs also changed |
 | Shared helper/base | Source-derived dependants |
 | Docs only | Text/Markdown checks, no image build |
 | Removed component | Removal/reference validation, no missing-directory build |
@@ -37,7 +50,7 @@ scripts; do not recursively scan ignored Yocto checkouts/build products.
 Emit a JSON object such as:
 
 ```json
-{"include":[{"image":"lint-example","directory":"lint/example","arch":"amd64","runner":"ubuntu-24.04","rebuild":true}]}
+{"include":[{"image":"lint-example","directory":"lint/example","arch":"amd64","runner":"ubuntu-24.04","rebuild":true,"scan":true}]}
 ```
 
 Also emit `has_images=true` or `false` as an explicit string output. Guard the
@@ -79,6 +92,14 @@ bounded and non-fail-fast. Use direct specialized actions inside both phases.
 - `release`: require successful qualification for selected work. Handle empty
   selections, separately validated artifact reuse and tag verification explicitly.
 
+Keep `scan` independent of `rebuild`; rebuilding requires qualification scans, but
+a review-policy change need not rebuild. For scan-only work, retrieve the native
+variant from the immutable published index and retain an archive for SBOM/review
+and scanning. Verify platform and image ownership, preserve its digest, and refuse
+to overwrite a build archive. Retain diagnostics even on scan failure. Do not emit
+new `tested: true` publication metadata or qualified publication archives for
+scan-only work. Keep the `high` gate and evidence checks identical to build scans.
+
 Use an isolated job service to transfer candidates by digest. Keep external
 publication TLS-verified and private HTTP limited to the documented fixture
 transport. Do not request generalized socket mounts or alter the host daemon.
@@ -107,8 +128,19 @@ Test artifact listing beyond 100 entries: two build/test matrices can span sever
 API pages. Check the pinned downloader's pagination and checksum behavior. Make
 public reports readable by the uploader despite differing container/runner UIDs.
 Exclude ephemeral keys and private signing configuration from broad report globs.
-On retries, preserve candidate identity and verify that the selected attempt's
-artifact set is complete; do not mix incompatible attempts to make publication pass.
+On partial retries, preserve candidate identity and derive the complete expected
+component/architecture set from the intended release source. Successful results
+may come from different attempts of the same source run; selecting only the last
+attempt can discard required results. Use stable per-component/platform/run names
+with explicit overwrite semantics, or select the latest compatible legacy attempt
+per key. Never fall back to an older success after a newer result failed validation.
+
+Paginate listings and select immutable artifact IDs, not a broad download pattern.
+Reject missing, expired or ambiguous results. Recheck source-run completion,
+success, revision and attempt after selection to detect a concurrent rerun. Verify
+downloaded archive hashes, qualification markers, exact revision, uniform candidate
+version and expected set again before publication. IDs alone do not prove content
+integrity, and results from incompatible runs must not be combined to pass validation.
 
 For multi-platform images, preserve the platform manifests and publish an index;
 do not accidentally release only the runner's native platform after an archive

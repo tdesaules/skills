@@ -31,6 +31,7 @@ Use `container` for Containerfile/image construction details, `conventionalcommi
 2. Inventory tracked and relevant untracked files, excluding ignored dependencies and outputs. Detect scripts by shebang/path as well as extension. Do not prescribe TOML lint when no TOML exists; distinguish BitBake `.conf`, LXC `.conf.in`, Shell `.script`, and `Containerfile.tools`.
 3. Identify runner OS/architecture, hosted versus self-hosted, available container engine, registry ownership, authentication, and expected artifacts. Do not assume Podman exists on every runner or Docker exists on a Podman-only host.
 4. Establish event policy, version source, publication targets, and whether the caller wants step-level reuse or whole-job reuse. Resolve missing consequential inputs rather than inventing credentials or registry digests.
+5. Before remote qualification/publication, verify the source-push identity can update workflows, separately from the workflow token, release App and Renovate credentials. Report missing permissions early without exposing tokens.
 
 ## Target architecture for this user's catalog
 
@@ -68,6 +69,7 @@ Read [docker-actions.md](references/docker-actions.md) for action/image layout, 
 6. Transfer files through uniquely named artifacts, and small scalar values through outputs. Never assume separate jobs share an engine image store or workspace. Aggregate matrix digests from per-component result artifacts, not colliding matrix outputs.
 7. Keep `build` and `test` separate. `build` emits archives and checksum receipts with `tested: false`; `test` verifies them, executes native candidates and negative/permission cases, generates SBOMs/scans, rechecks integrity and only then emits `tested: true`. Never rebuild a catalog image in `test`; synthetic builds for testing Buildah itself are allowed.
 8. Reuse the published digest for metadata-only changes; documentation-only changes select documentation checks. Use an isolated job registry for native candidates, without a host image-store assumption or generalized socket access. Preserve TLS for external publication; restrict private HTTP to the documented fixture transport.
+9. Select `scan` independently of `rebuild`: policy changes can require scans of published native images without construction. Keep scan-only reports separate from newly qualified publication artifacts. Use the same selection logic for matrices, publication plans and artifact-reuse validation.
 
 Read [dynamic-matrices.md](references/dynamic-matrices.md) for diff selection, matrix outputs, dependency conditions, and runner constraints.
 
