@@ -34,7 +34,7 @@ qualified until the user pushes it and both native runner variants execute.
 ## Checks and limits
 
 - Existing skill validator checks frontmatter and internal Markdown links.
-- `scripts/check_repository.py` checks eval IDs, required strings, boolean trigger
+- `.github/scripts/check_repository.py` checks eval IDs, required strings, boolean trigger
   labels, duplicate JSON keys, fixture paths, skill-name matching and orphan evals.
   It parses Markdown links/reference links/images across skills, docs, root Markdown
   and action docs, checking local file/directory paths and repository escapes.
@@ -54,12 +54,16 @@ qualified until the user pushes it and both native runner variants execute.
 ## Local reproduction
 
 ```bash
-uv run scripts/check_repository.py .
+uv run .github/scripts/check_repository.py .
 uv run --with PyYAML==6.0.3 --with markdown-it-py==4.0.0 --with mdurl==0.1.2 python tests/run.py
-python3 scripts/qualify_ci_actions.py --output /absolute/external/skills-ci
+python3 .github/scripts/qualify_ci_actions.py --output /absolute/external/skills-ci
 ```
 
 The first two commands need Python 3.10+ and uv; qualification additionally needs
 Git and rootless Podman. Builds fetch pinned tools/packages; action execution is
 tested offline. Archive and receipt output belongs outside the checkout.
 Do not push this repository automatically; the user controls Git pushes.
+
+Repository-only CI helpers live in `.github/scripts/`. The scripts bundled under
+`skill/scripts/` belong to the installable authoring skill and stay with that skill.
+Action entrypoints and image recipes remain under `.github/actions/`.

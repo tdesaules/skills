@@ -39,7 +39,7 @@ registry credentials, image publication, or remote workflow execution is implied
 From a clean checkout on each native platform:
 
 ```bash
-python3 scripts/qualify_ci_actions.py --output /absolute/external/skills-ci
+python3 .github/scripts/qualify_ci_actions.py --output /absolute/external/skills-ci
 ```
 
 This builds each dedicated image, runs the actual checks offline/read-only, checks

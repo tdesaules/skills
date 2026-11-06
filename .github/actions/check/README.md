@@ -1,7 +1,7 @@
 # Repository check action
 
 Native Docker action with no inputs. The fixed Go entrypoint runs
-`python3 -B scripts/check_repository.py .` in the caller checkout.
+`python3 -B .github/scripts/check_repository.py .` in the caller checkout.
 Python, PyYAML and Markdown parsing dependencies are bundled; no runtime network
 or source writes are needed. Exit 1 reports invalid metadata/evaluations/links.
 

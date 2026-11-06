@@ -28,7 +28,7 @@ From repository root, with Python 3.10+ and uv:
 uv run skill/scripts/validate.py --collection .
 uv run skill/scripts/validate.py ./helm # focused skill check
 uv run --with PyYAML==6.0.3 python -m unittest discover -s skill/scripts
-uv run scripts/check_repository.py .
+uv run .github/scripts/check_repository.py .
 uv run --with PyYAML==6.0.3 --with markdown-it-py==4.0.0 --with mdurl==0.1.2 python tests/run.py
 ```
 
@@ -50,7 +50,9 @@ uv run --with PyYAML==6.0.3 --with markdown-it-py==4.0.0 --with mdurl==0.1.2 pyt
   build/release/maintenance are deliberately skipped, with no publication side effects.
 - `.github/actions/*/Dockerfile` symlinks select their Containerfile for native
   source-action bootstrap. Do not replace them with host/composite scripts.
-- `scripts/qualify_ci_actions.py --output <external-directory>` builds/tests/archives
+- Keep repository-only CI helpers under `.github/scripts/`; skill-bundled scripts
+  stay in their own `<skill>/scripts/` directory.
+- `.github/scripts/qualify_ci_actions.py --output <external-directory>` builds/tests/archives
   exact native images. Publication requires both native platforms and actual GHCR
   digests; source-action CI is not the completed prebuilt-image catalog contract.
 

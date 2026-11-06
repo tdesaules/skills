@@ -74,7 +74,7 @@ lint and unit tests. Its source-action bootstrap still needs native ARM64/hosted
 qualification and GHCR publication before transition to prebuilt digest references.
 
 ```bash
-uv run scripts/check_repository.py .
+uv run .github/scripts/check_repository.py .
 uv run --with PyYAML==6.0.3 --with markdown-it-py==4.0.0 --with mdurl==0.1.2 python tests/run.py
 ```
 

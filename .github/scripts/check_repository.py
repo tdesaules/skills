@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["PyYAML==6.0.3", "markdown-it-py==4.0.0", "mdurl==0.1.2"]
 # ///
-"""Check collection structure, evaluation data, and local Markdown file links."""
+"""Repository CI: check skills, evaluation data, and local Markdown file links."""
 
 import argparse
 import importlib.util

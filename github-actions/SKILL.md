@@ -45,6 +45,11 @@ routing and syntax checks remain independently usable.
 - Give each specialized operation its own directory, `action.yml`, `Containerfile`,
   fixed-operation Go executable, README, and tests. Put linters under `lint/<linter>/`.
   Do not introduce a generic runtime operation selector.
+- Put repository-only CI helpers in **`.github/scripts/`**, separating workflow
+  infrastructure from application code and distributable skill resources. Keep
+  each action's entrypoint and image recipe beside its `action.yml`; scripts shipped
+  with an Agent Skill stay under that skill's `scripts/`. Moving a helper does not
+  authorize replacing a dedicated Docker action with a host-script workflow step.
 - Build each action's own image in multiple stages. **Prefer `FROM scratch` when
   the executable and its complete runtime dependencies are suited to it**, especially
   for static tools. Otherwise choose a compatible runtime base from the `container`
