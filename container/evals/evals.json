@@ -1,0 +1,17 @@
+{
+  "skill_name": "container",
+  "evals": [
+    {"id": 1, "prompt": "Review this Containerfile fragment: FROM scratch; COPY app /app; USER 65532; HEALTHCHECK CMD curl http://localhost:8080/health; ENTRYPOINT [\"/app\"]. The binary is static but curl is not copied.", "expected_output": "Identify that the health command/shell cannot run in scratch, propose an app subcommand or runtime probe, and distinguish OCI metadata support."},
+    {"id": 2, "prompt": "Review a compose service with ENTRYPOINT [\"/app\"] in its image and command: [\"migrate\"]. The image implements migrate and runs non-root with a writable volume.", "expected_output": "Accept the entrypoint/CMD combination; do not add /app again or demand an unrelated architecture."},
+    {"id": 3, "prompt": "Can I copy a venv from python:3.12-slim-bookworm to distroless/python3-debian12 and assume it runs? Also check these choices against our base-image policy.", "expected_output": "Identify both bases as outside the container skill's allowlist, propose matching allowed build/runtime bases, and explain interpreter path/version, ABI and library closure checks. Do not assume a distro name guarantees compatibility."},
+    {"id": 4, "prompt": "Our project uses Docker BuildKit. Fix RUN --mount=type=bind,source=go.mod,target=go.mod,z go mod download failing on the z option. Keep Docker.", "expected_output": "Remove the unsupported option or use portable COPY, preserve Docker, and avoid claiming Docker ignores Buildah-specific flags."}
+  ],
+  "trigger_queries": [
+    {"query": "Mon image fait 1,2 Go, réduis le runtime", "should_trigger": true},
+    {"query": "Write a rootless Quadlet for this service", "should_trigger": true},
+    {"query": "Compose starts the API before Postgres is ready", "should_trigger": true},
+    {"query": "Why is my GitHub Actions matrix skipped after lint?", "should_trigger": false},
+    {"query": "Fix a Helm Deployment selector upgrade error", "should_trigger": false},
+    {"query": "Write a Kustomize overlay for this image", "should_trigger": false}
+  ]
+}

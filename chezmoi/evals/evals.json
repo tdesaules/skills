@@ -1,0 +1,17 @@
+{
+  "skill_name": "chezmoi",
+  "evals": [
+    {"id": 1, "prompt": "My chezmoi source has dot_gitconfig.tmpl containing email = {{ .email }}, but chezmoi cat ~/.gitconfig fails because email is undefined. Make it host-specific and preview only; ask me for the email if needed.", "expected_output": "Inspect source/config data, obtain the missing email rather than inventing it, render the target and preview without applying."},
+    {"id": 2, "prompt": "Review this chezmoi script: run_onchange_after_10-config.sh.tmpl contains '#!/bin/sh\n# {{ include \"dot_config/app/config.yaml\" | sha256sum }}\napp reload'. The referenced file exists and app reload is idempotent. Is the dependency trigger appropriate?", "expected_output": "Accept the content-hash trigger; do not invent an absent dependency or require chmod for run scripts."},
+    {"id": 3, "prompt": "I edited ~/.config/app/config.yaml locally and chezmoi diff would overwrite it. Help me keep the local change in source state.", "expected_output": "Inspect actual source/target mapping and whether it is templated before selecting add/re-add or a source edit; preserve the local change."},
+    {"id": 4, "prompt": "Review only: my chezmoi config has autoPush enabled and run_once scripts pending. Show what apply would affect.", "expected_output": "Inspect and report relevant preview/script effects without applying, resetting script state, committing, or pushing."}
+  ],
+  "trigger_queries": [
+    {"query": "Ajoute mon gitconfig à chezmoi avec une identité par machine", "should_trigger": true},
+    {"query": "chezmoi keeps rerunning my onchange script after a template edit", "should_trigger": true},
+    {"query": "Preview the changes from my .chezmoiexternal.toml", "should_trigger": true},
+    {"query": "Fix this HTML email.tmpl Go template in our API", "should_trigger": false},
+    {"query": "Manage my dotfiles with GNU Stow symlinks", "should_trigger": false},
+    {"query": "Commit this already-reviewed dotfiles diff", "should_trigger": false}
+  ]
+}

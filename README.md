@@ -1,45 +1,107 @@
-# skills
+# Agent Skills
 
-Personal OpenCode skills collection (GPL-3.0, see `LICENSE`).
-
-Layout is `opencode/<skill>/SKILL.md`, flat — no nesting (OpenCode v1
-discovers a single level).
+Portable [Agent Skills](https://agentskills.io/) for development and operations.
+Each root-level folder contains `SKILL.md`, optional references/scripts, and
+evaluation cases. Explicit companion dependencies are documented below. Licensed GPL-3.0-or-later;
+see [LICENSE](LICENSE).
 
 ## Skills
 
-| Skill                                            | What it does                                                        |
-| ------------------------------------------------ | ------------------------------------------------------------------- |
-| [chezmoi](opencode/chezmoi/SKILL.md)              | Manage dotfiles with chezmoi: safe apply workflow, templates, scripts, secrets |
-| [conventionalcommits](opencode/conventionalcommits/SKILL.md) | Write Conventional Commits messages: types, scopes, breaking changes, splitting |
-| [commit](opencode/commit/SKILL.md) | Stage and commit proactively, one commit per logical unit; local amend/fixup |
-| [container](opencode/container/SKILL.md) | Containerfile/compose/OCI images with podman, buildah, skopeo: multi-stage, scratch/distroless, rootless hardening, Quadlet |
-| [github-actions](opencode/github-actions/SKILL.md) | Native Docker actions with dedicated multistage scratch images on GHCR; selective build/test matrices, releases, Syft/Grype/Cosign |
-| [helm](opencode/helm/SKILL.md) | Author, lint, and operate Helm charts: values design, namespaced templates, hooks, schema, OCI, v3/v4 CLI |
-| [skill](opencode/skill/SKILL.md)                 | Write, review, and test OpenCode skills: frontmatter, selectivity, output contract, 4-case testing |
+| Skill | Scope |
+| --- | --- |
+| [chezmoi](chezmoi/SKILL.md) | Managed dotfiles, templates, scripts, preview/apply |
+| [commit](commit/SKILL.md) | Proactive local commits, required why-body, unpublished history; requires conventionalcommits |
+| [conventionalcommits](conventionalcommits/SKILL.md) | Message types, scopes, breaking changes; no Git mutation |
+| [container](container/SKILL.md) | OCI builds, Compose, Quadlet, runtime diagnosis |
+| [github-actions](github-actions/SKILL.md) | Personal main.yml/six-job CI contract, dedicated Docker/scratch actions, GHCR releases |
+| [helm](helm/SKILL.md) | Charts, values, templates, dependencies, releases |
+| [skill](skill/SKILL.md) | Portable skill authoring, validation, evaluation |
 
-## Use these skills
+The `container` skill owns the base-image allowlist (all build and runtime stages).
+`helm` and `github-actions` refer to it for image-selection/build policy. Application
+images are checked through their recipes/provenance rather than renamed to base
+images. See [the policy](container/SKILL.md#base-image-allowlist) for exact repositories.
 
-This repo lives outside OpenCode's default scan paths, so register it:
+Agent portability preserves personal repository conventions. `github-actions`
+retains the main.yml/six-job layout, no PR trigger by default, dedicated Go/Docker
+actions with scratch runtimes, Grype/high gate, no-v Git tags, and the personal
+GHCR namespace. These are project choices, not Agent Skills or GitHub requirements.
+`commit` loads `conventionalcommits` before proactively committing implementation
+work with a subject and why-body; explicit review-only/no-commit requests take priority.
 
-```json
-{ "$schema": "https://opencode.ai/config.json",
-  "skills": { "paths": ["opencode"] } }
+## Install
+
+The format is agent-independent; discovery paths and permissions belong to the
+client. Check the supported skill directory or external-path registration in your
+client's documentation. For a client supporting project `.agents/skills/`, copy
+selected **whole folders** from this repository:
+
+```bash
+mkdir -p /path/to/project/.agents/skills
+cp -R /path/to/this-repository/helm /path/to/project/.agents/skills/
 ```
 
-(`paths` entries are relative to the declaring config; absolute paths also
-work.) Then quit and restart opencode — config loads once at startup.
+Keep `references/` and `scripts/` with SKILL.md. Do not overwrite an existing skill
+of the same name without reviewing it. Reload discovery as your client requires,
+then verify that its execution trace actually loads the intended SKILL.md.
+An agent without automatic discovery can read the skill and resolve its references
+directly; that does not test automatic activation.
 
-Alternatives: clone this repo (or a subdir) directly into
-`~/.config/opencode/skills/` or `.opencode/skills/`, which OpenCode scans
-automatically.
+Install `commit` and `conventionalcommits` together: the companion is required,
+not an optional message-format fallback. When using the collection's image policy,
+also make `container` available to `helm` and `github-actions`.
+
+### Migration from `opencode/`
+
+The former `opencode/<name>/` folders now live at `<name>/`. Update external-path
+registrations pointing to `.../skills/opencode` to `.../skills`, or replace copied
+installations with the new whole folders. Remove stale duplicate registrations.
+Client configuration syntax is version-specific; no OpenCode configuration is
+required by this collection. Skill names are unchanged.
+
+## Validate
+
+From the repository root (Python 3.10+ and [uv](https://docs.astral.sh/uv/) required):
+
+```bash
+uv run skill/scripts/validate.py --collection .
+uv run --with PyYAML==6.0.3 python -m unittest discover -s skill/scripts
+```
+
+The read-only validator declares its pinned dependency inline, emits JSON, and
+checks frontmatter plus explicit local Markdown links. First execution may download
+dependencies. Exit codes: 0 valid, 1 validation failure, 2 command-line misuse.
+Run `--help` for individual-skill validation. It does not execute domain tools,
+check external links, count model tokens, or measure agent behavior.
+
+The official [skills-ref](https://github.com/agentskills/agentskills/tree/main/skills-ref)
+validator can also check each folder with `skills-ref validate ./helm`.
+For the exact upstream revision used in this review:
+
+```bash
+uvx --from 'git+https://github.com/agentskills/agentskills.git@83021e2be457a9b6679148719c1f6074f0ad975e#subdirectory=skills-ref' skills-ref validate ./helm
+```
+
+This upstream installation requires Python 3.11+, Git, and initial network access.
+
+## Evaluate
+
+Every skill has `evals/evals.json`: four initial behavioral cases and six labeled
+activation queries, including near-misses. These are **test specifications**, not
+published benchmark results. Follow [the evaluation guide](docs/evaluation.md)
+for fresh-session runs, baselines, grading, and description optimization.
+
+See [the review report](docs/review.md) for findings corrected in this migration
+and the limits of verification. Templates remain illustrative until adapted and
+tested with the target application's tools, versions, and environment.
 
 ## Contribute
 
-- One folder per skill, file named exactly `SKILL.md`, folder name ==
-  frontmatter `name` (`^[a-z0-9]+(-[a-z0-9]+)*$`, 1–64 chars).
-- `description` 1–1024 chars: what + when, trigger keywords first, plus an
-  `Examples:` block mapping user utterances to behavior.
-- Body opens with `## What I do` / `## When to use me`; imperative voice;
-  detail goes in `references/`.
-- Full authoring guidance: [opencode/skill/SKILL.md](opencode/skill/SKILL.md).
-- Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+Follow [AGENTS.md](AGENTS.md) and the [authoring skill](skill/SKILL.md).
+Keep changes grounded in actual workflows and failure cases. Use concise activation
+descriptions, load detailed references on demand, and document intended companion
+dependencies. Preserve user conventions during portability refactors. Use Python or `go run` for reusable utilities, with explicit runtimes,
+pinned dependencies, noninteractive interfaces, and meaningful failure checks.
+
+The specification defines the file format; body headings, evaluation JSON layout,
+and repository layout are conventions. Use Conventional Commits for repository history.

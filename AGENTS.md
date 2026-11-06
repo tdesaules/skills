@@ -1,39 +1,45 @@
-# AGENTS.md
+# Repository instructions
 
-Skills repo (GPL-3.0). Layout: `opencode/<skill>/SKILL.md`, flat — no nesting
-(OpenCode v1 discovers a single level under each registered path).
+## Editing skills
 
-## Response style
+- Skills live at root `<name>/SKILL.md`; `opencode/` is the retired layout.
+  Keep resources inside each skill; document intentional companion dependencies
+  without assuming client-specific tool IDs. Install commit with conventionalcommits.
+- Read `skill/SKILL.md` for authoring rules. Keep skills agent-neutral;
+  `compatibility` names actual runtime requirements, not OpenCode. Fixed headings
+  and frontmatter Examples blocks are not required.
+- Skill Markdown links must stay inside that skill folder; the validator resolves
+  them relative to the containing Markdown file. Update README's table for skill additions/removals.
+- Prefer Python or `go run` for utilities; script interface guidance is in
+  `skill/references/scripts.md`.
+- `commit` owns Git mutation; `conventionalcommits` owns message semantics.
+  Commit proactively by default, load conventionalcommits first, and include a why-body.
+- Agent portability does not mean removing user conventions. Preserve the GitHub
+  Actions main.yml/six-job/Docker/scratch/Grype contract and the container allowlist.
 
-- Keep responses **short and concise**. No preamble/postamble, no fluff.
+## Verification
 
-## Skills (non-standard path)
+From repository root, with Python 3.10+ and uv:
 
-- Files here are **not** auto-discovered: OpenCode only scans `.opencode/skills/`,
-  `~/.config/opencode/skills/`, `.claude/skills/`, `.agents/skills/`.
-  Consumers must register this repo's dir and restart opencode:
-  `{"skills": {"paths": ["opencode"]}}` (+ `"$schema": "https://opencode.ai/config.json"`).
-- Per skill, all required, verified before commit:
-  - `SKILL.md` all caps, folder name == frontmatter `name`,
-    `^[a-z0-9]+(-[a-z0-9]+)*$` (1–64 chars).
-  - `description` 1–1024 chars, third person, covers what + when, front-loads
-    literal trigger keywords the user would type, plus an `Examples:` block
-    mapping utterances to behavior.
-  - Optional: `license: GPL-3.0-or-later`, `compatibility: opencode`,
-    `metadata` (string-string map).
-- Body convention: `## What I do` / `## When to use me` scope sections first
-  (per https://opencode.ai/docs/skills/), gate with "Use ONLY when..." for
-  adjacent topics. Imperative voice, output contract, detail in `references/`.
-- Authoring guidance lives in-skill: `opencode/skill/SKILL.md` (anatomy,
-  selectivity self-test, layer-by-layer diagnosis, 4-case testing).
-- Validate: `python3 -c` check on name/dir-match/regex + `len(description)`.
+```bash
+uv run skill/scripts/validate.py --collection .
+uv run skill/scripts/validate.py ./helm # focused skill check
+uv run --with PyYAML==6.0.3 python -m unittest discover -s skill/scripts
+```
 
-## Git workflow
+- Append `-k test_links_missing_escape_and_valid` to the unittest command for one test.
+  Discovery's `-s skill/scripts` is needed for the test's `from validate import validate`.
+- The validator declares PyYAML via PEP 723; the unittest invocation needs its own
+  `--with` dependency. First use may download packages.
+- Collection validation scans only immediate `*/SKILL.md` files. It does not check
+  evaluation JSON, root documentation links, external URLs, or skill behavior.
+- For the official validator, use README's pinned upstream installation command;
+  the PyPI `skills-ref==0.1.0` package exposed a different executable during review.
+- `evals/evals.json` contains test specifications, not benchmark results. Follow
+  `docs/evaluation.md` for isolated comparisons; templates in references also require
+  target-environment validation before claiming they work.
 
-- **Conventional Commits** (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`).
-  Skill available: `opencode/conventionalcommits/SKILL.md`.
-- Commit workflow (inspect, stage per unit, verify, amend/fixup): see
-  `opencode/commit/SKILL.md`. Proactive commits allowed, but stop on
-  empty diff, secrets, hook failure, or pushed history.
-- **Never push** — user pushes manually.
-- When adding a skill, also add its row to `README.md`.
+## Git
+
+Use Conventional Commits and the proactive workflow in `commit/SKILL.md` unless the
+request limits the task to review/proposal. **Never push**; the user pushes manually.

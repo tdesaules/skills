@@ -1,0 +1,17 @@
+{
+  "skill_name": "conventionalcommits",
+  "evals": [
+    {"id": 1, "prompt": "Draft a Conventional Commit for renaming the public config key endpoint to serverUrl with no backward-compatible alias. Include migration guidance; don't commit.", "expected_output": "A valid breaking-change message describing the rename and migration without modifying Git."},
+    {"id": 2, "prompt": "Review 'docs: correct the installation command' for a prose-only README correction. Our policy allows lowercase conventional types.", "expected_output": "Accept docs as appropriate without inventing a fix-type requirement or SemVer bump."},
+    {"id": 3, "prompt": "The diff contains a new CLI flag, its tests, and help documentation. Should this be feat, test, and docs commits?", "expected_output": "Recommend one cohesive feat commit if all changes serve the flag; do not split solely because three file categories appear."},
+    {"id": 4, "prompt": "Write a commit subject for 'changed config'. No diff or intended behavior is available.", "expected_output": "Request the missing behavioral intent rather than fabricate a feature, bug, scope, or issue reference."}
+  ],
+  "trigger_queries": [
+    {"query": "Quel type Conventional Commit pour une faute dans le README ?", "should_trigger": true},
+    {"query": "Draft a breaking-change footer for this renamed API", "should_trigger": true},
+    {"query": "Check the syntax of feat(parser)!: remove the legacy mode", "should_trigger": true},
+    {"query": "Stage only src/parser.py and create a commit", "should_trigger": false},
+    {"query": "Set up automated SemVer releases with git-cliff", "should_trigger": false},
+    {"query": "Rebase my unpublished branch onto main", "should_trigger": false}
+  ]
+}

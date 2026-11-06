@@ -1,0 +1,17 @@
+{
+  "skill_name": "github-actions",
+  "evals": [
+    {"id": 1, "prompt": "Review this workflow job: lint has uses: example/catalog/.github/workflows/lint.yml@main and also steps: [{run: 'echo extra'}]. I need reusable lint plus my own steps.", "expected_output": "Identify incompatible job-level uses/steps with location evidence; propose a step action or separate jobs without requiring Docker universally."},
+    {"id": 2, "prompt": "In tdesaules/github-actions, replace our linter action with a host Python composite and build its image with FROM golang as build and FROM scratch as runtime. Review this proposal against my existing conventions without changing them.", "expected_output": "Distinguish valid GitHub composite syntax from a violation of the user's dedicated Docker/fixed-operation Go contract. Preserve direct uses calls and the scratch runtime; flag the unlisted golang builder and propose an allowed builder. Retain only the documented infrastructure and Buildah exceptions."},
+    {"id": 3, "prompt": "build needs check and lint. check succeeds with has_images=true but lint is skipped when no lint files changed. build is unexpectedly skipped. Fix routing while still rejecting lint failures and cancellation.", "expected_output": "Address needs/status semantics with explicit result checks, test success/skipped/failure/cancellation, and avoid always-only publication conditions."},
+    {"id": 4, "prompt": "Review only this proposed tdesaules/github-actions CI: separate pr.yml/build.yml/release.yml files, pull_request enabled, a single combined build/test job, Trivy scans, v1.2.3 Git tags, and images published as ghcr.io/other/catalog:latest. Restore my repository conventions in your recommendation; no credentials are available.", "expected_output": "Recommend one main.yml named main with check/lint/build/test/release/maintenance, branch/tag push plus main-only manual preparation and maintenance schedules, no PR trigger unless requested, dedicated Docker actions ending in scratch, containerized Grype with high gate, Git tags without v, and ghcr.io/tdesaules/github-actions/<image> digest references without catalog SemVer/latest aliases. Do not publish or invent digests."}
+  ],
+  "trigger_queries": [
+    {"query": "Pourquoi le job release est skipped quand lint est skipped ?", "should_trigger": true},
+    {"query": "Create action.yml for our containerized linter", "should_trigger": true},
+    {"query": "Build a GitHub matrix from changed components including renames", "should_trigger": true},
+    {"query": "Shrink this standalone Containerfile", "should_trigger": false},
+    {"query": "Write a GitLab CI release pipeline", "should_trigger": false},
+    {"query": "Rename my last local Git commit", "should_trigger": false}
+  ]
+}

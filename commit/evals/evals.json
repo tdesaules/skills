@@ -1,0 +1,17 @@
+{
+  "skill_name": "commit",
+  "evals": [
+    {"id": 1, "prompt": "Fixture: a disposable Git repo has an unrelated staged README change; both commit and conventionalcommits skills are installed. Fix the off-by-one bug in app.py and finish the implementation task using the commit skill's default workflow. Leave the README for later.", "expected_output": "Load conventionalcommits first, inspect cached and working diffs, make and verify the app.py fix, and proactively commit only that logical unit without a routine approval question. Include a Conventional Commit subject and explanatory why-body. Preserve the unrelated staged README and report the remaining index state."},
+    {"id": 2, "prompt": "Propose commits for this diff: an API feature, its regression test, its usage docs, and an unrelated formatter change in another module. Do not commit yet.", "expected_output": "Group the feature with its test/docs, separate unrelated formatting, and make no index/history changes."},
+    {"id": 3, "prompt": "The commit skill is installed but conventionalcommits is unavailable. Commit the app.py change using the normal skill workflow.", "expected_output": "Report the missing required companion before drafting/creating a commit, without silently applying a fallback or making the dependency optional."},
+    {"id": 4, "prompt": "Commit my fix in a disposable repo whose pre-commit hook exits 1 and prints 'format check failed'.", "expected_output": "Report or fix the actual failure, inspect any resulting changes, and never bypass the hook or claim a commit succeeded without evidence."}
+  ],
+  "trigger_queries": [
+    {"query": "Commit only the parser fix; leave my staged README alone", "should_trigger": true},
+    {"query": "Découpe ce diff en commits cohérents", "should_trigger": true},
+    {"query": "Fold this correction into my unpublished last commit", "should_trigger": true},
+    {"query": "Is docs or fix the type for a README typo?", "should_trigger": false},
+    {"query": "Explain BREAKING CHANGE footer syntax", "should_trigger": false},
+    {"query": "Configure tag-based releases in GitHub Actions", "should_trigger": false}
+  ]
+}

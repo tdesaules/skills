@@ -1,0 +1,17 @@
+{
+  "skill_name": "skill",
+  "evals": [
+    {"id": 1, "prompt": "Make my GitHub Actions skill portable between agents and conformant with agentskills.io. Preserve my conventions: one main.yml, six jobs, dedicated Docker actions, scratch runtimes and Grype. The commit companion requires loading conventionalcommits and proactive commits with a why-body.", "expected_output": "Use valid frontmatter, concise activation guidance and on-demand references while retaining every stated convention and the required companion dependency. Distinguish user policy from format requirements; do not turn personal conventions into optional generic advice or reintroduce OpenCode-only tool assumptions."},
+    {"id": 2, "prompt": "Review a skill named example in folder example, description 'Use when reviewing SQL migrations for compatibility during rolling deploys', and a 40-line procedure. It has no compatibility or metadata fields.", "expected_output": "Accept optional fields being absent and do not demand fixed scope headings or an Examples block in frontmatter."},
+    {"id": 3, "prompt": "My skill's frontmatter validates, but the agent never loads it. I have not told you which agent client or discovery configuration I use.", "expected_output": "Separate format, discovery, and activation; inspect/ask for the actual client and trace rather than prescribe OpenCode config or assert structural validation proves loading."},
+    {"id": 4, "prompt": "Add a Python script for a repeated deterministic validation task. It needs PyYAML. Make it runnable without an interactive installation session.", "expected_output": "Document Python and uv, declare pinned PEP 723 dependencies, expose help/JSON/exit codes, and test failure paths. Do not assume python3 auto-installs inline dependencies."}
+  ],
+  "trigger_queries": [
+    {"query": "Refactor ce SKILL.md selon Agent Skills", "should_trigger": true},
+    {"query": "My skill activates for unrelated spreadsheet requests", "should_trigger": true},
+    {"query": "Design baseline comparisons for our code-review skill", "should_trigger": true},
+    {"query": "Configure an MCP server for my agent", "should_trigger": false},
+    {"query": "Change my OpenCode model provider", "should_trigger": false},
+    {"query": "Write an agent plugin for tool logging", "should_trigger": false}
+  ]
+}

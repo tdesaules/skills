@@ -1,0 +1,17 @@
+{
+  "skill_name": "helm",
+  "evals": [
+    {"id": 1, "prompt": "A Helm template uses {{ .Values.ingress.annotations.foo | default \"bar\" }} and crashes when ingress is absent. Fix it and show validation for absent and present parents.", "expected_output": "Guard the parent before dereferencing, render both cases, and do not claim default on the final value prevents the original nil dereference."},
+    {"id": 2, "prompt": "Review this PDB template: {{- with .Values.pdb.minAvailable }} minAvailable: {{ . }} {{- end }}. We explicitly support minAvailable: 0.", "expected_output": "Identify zero being omitted; use key presence and validate mutually exclusive PDB fields."},
+    {"id": 3, "prompt": "My chart's pre-install migration Job uses the ServiceAccount created by an ordinary template in the same chart. Why does first install fail?", "expected_output": "Explain hook ordering and propose an existing account, ordered hook resources, or lifecycle redesign rather than merely increasing timeout."},
+    {"id": 4, "prompt": "Review this Helm .helmignore: '*.md' then '!README.md'. I want to keep the README in the package. Also review the test Pod's busybox:1.36 image against our collection's base-image policy. Do not deploy anything.", "expected_output": "Identify unsupported negation and suggest explicit exclusions. Consult the container skill when available for the test-image policy; do not assume BusyBox is allowlisted or replace its test command with a bare base lacking that tool. Report unknown provenance or unavailable policy and avoid cluster mutation."}
+  ],
+  "trigger_queries": [
+    {"query": "helm upgrade plante avec nil pointer evaluating interface", "should_trigger": true},
+    {"query": "Review chart values schema and optional subcharts", "should_trigger": true},
+    {"query": "Create a Helm chart for this HTTP service", "should_trigger": true},
+    {"query": "Fix my raw Kubernetes Deployment YAML; no Helm", "should_trigger": false},
+    {"query": "Refactor our email templates written in Go", "should_trigger": false},
+    {"query": "Build a smaller image for the app in this chart", "should_trigger": false}
+  ]
+}
