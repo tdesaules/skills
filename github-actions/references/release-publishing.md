@@ -10,6 +10,12 @@ v prefix for Git/GitHub Releases; no catalog SemVer/latest aliases for images.
 Validate SemVer separately from tag globs. These are user conventions, not platform
 requirements; preserve explicit user/repository overrides.
 
+Use the six-job contract linked from SKILL.md for dispatch modes, needs, outputs
+and gates. Prepare mode builds changed images and qualifies the complete intended
+release set, including reused digests. Tag mode skips build, tests the complete
+published set, then verifies/publishes the GitHub Release. A no-bump preparation
+is an explicit successful no-op; maintenance routes only to its independent job.
+
 ## Publish exact qualified artifacts
 
 For a catalog whose metadata pins prebuilt action images:

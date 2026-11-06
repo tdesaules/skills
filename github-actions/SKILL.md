@@ -84,6 +84,25 @@ routing and syntax checks remain independently usable.
 - If bootstrap requires temporary bridges, document their removal condition and
   finish activation after publication. A green transitional CI is not completion.
 
+## Six-job execution contract
+
+Read [the job contract](references/job-contract.md) when creating or changing
+main.yml, job conditions, outputs, or release routing. It defines the required
+event matrix, needs graph, output names, artifacts, and success criteria.
+
+| Job | Responsibility | needs |
+| --- | --- | --- |
+| `check` | Validate source/event policy and emit a deterministic execution plan | none |
+| `lint` | Run selected static checks; no release builds or runtime qualification | `check` |
+| `build` | Build selected native candidates; emit untested archives/receipts | `check`, `lint` |
+| `test` | Test exact candidates or published digests, generate SBOMs and scans | `check`, `lint`, `build` |
+| `release` | Prepare images/references/tag, or verify a tag and publish the GitHub Release | `check`, `lint`, `build`, `test` |
+| `maintenance` | Scheduled/manual Renovate, rescans and link checks, independently | none |
+
+Require every selected dependency to succeed. A skipped dependency is acceptable
+only when check explicitly declared that phase empty. Tags never rebuild images;
+maintenance never enters release. Never treat skipped required tests as success.
+
 ## Workflow
 
 1. Read instructions, existing workflows/actions, build tools, release configuration,
@@ -93,8 +112,8 @@ routing and syntax checks remain independently usable.
 2. Apply the repository contract and agreed exceptions. Inventory actual source
    languages and scripts, including extensionless files; do not prescribe checks
    for nonexistent inputs. Resolve consequential missing runner/credential inputs.
-3. Make event routing, job dependencies, conditions, matrices, and permissions
-   visible in the six-job workflow. Discover components from source, action metadata
+3. Implement the six-job execution contract, keeping routing, dependencies,
+   conditions, matrices and permissions visible. Discover components from source, action metadata
    and build dependencies; do not add a central catalog manifest/lockfile or
    catalog-level `catalog/`, `config/`, `security/` trees. Keep tool config at the root.
    `build` emits archives/receipts with `tested: false`; `test` verifies and executes

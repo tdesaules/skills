@@ -1,5 +1,9 @@
 # Change selection and dynamic matrices
 
+The six-job contract linked from SKILL.md defines output names and routing. Here
+`has_images` means nonempty build_matrix; separate has_lint/has_tests flags gate
+lint_matrix/test_matrix. Tag validation selects published-image tests, never builds.
+
 ## Discover components from source
 
 Derive stable component names, source directories, image ownership and platforms
@@ -47,14 +51,16 @@ scripts; do not recursively scan ignored Yocto checkouts/build products.
 
 ## Outputs and job conditions
 
-Emit a JSON object such as:
+Emit build_matrix as a JSON object such as:
 
 ```json
-{"include":[{"image":"lint-example","directory":"lint/example","arch":"amd64","runner":"ubuntu-24.04","rebuild":true,"scan":true}]}
+{"include":[{"component":"lint-example","directory":"lint/example","arch":"amd64","runner":"ubuntu-24.04"}]}
 ```
 
 Also emit `has_images=true` or `false` as an explicit string output. Guard the
-matrix job with it. A matrix entry is an independent job instance, not a parallel
+build job with it; place runtime_test/scan flags in the separate test_matrix.
+Guard the test job with has_tests, not has_images. Each
+matrix entry is an independent job instance, not a parallel
 step. Use `max-parallel` to bound runner/disk pressure and `fail-fast: false` when
 all independent results are useful. Available runners and account concurrency
 limits still cap actual parallelism. GitHub currently limits a matrix to 256 jobs;
@@ -67,7 +73,8 @@ but rejects failures/cancellation can use a condition shaped like:
 ```yaml
 if: >-
   ${{ !cancelled() && needs.check.result == 'success' &&
-      (needs.lint.result == 'success' || needs.lint.result == 'skipped') &&
+      ((needs.check.outputs.has_lint == 'true' && needs.lint.result == 'success') ||
+       (needs.check.outputs.has_lint == 'false' && needs.lint.result == 'skipped')) &&
       needs.check.outputs.has_images == 'true' }}
 ```
 
