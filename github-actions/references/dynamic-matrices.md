@@ -93,19 +93,21 @@ separate jobs with bounded, non-fail-fast native AMD64/ARM64 matrices.
   OCI archives plus checksums/source-bound receipts with `tested: false`.
 - `test`: download and verify those receipts, test the exact candidate runtime
   and native action interfaces, retain positive/negative/permission diagnostics,
-  generate Syft SBOMs and Grype scans at high, recheck integrity, then emit `tested: true`.
+  attempt advisory Syft SBOMs and Grype scans, recheck integrity, then emit
+  `tested: true` after functional success, with separate security status.
 - Do not rebuild catalog images in `test`. Synthetic builds are appropriate when
   testing Buildah itself. Metadata-only selection uses existing published images.
 - `release`: require successful qualification for selected work. Handle empty
   selections, separately validated artifact reuse and tag verification explicitly.
 
-Keep `scan` independent of `rebuild`; rebuilding requires qualification scans, but
+Keep `scan` independent of `rebuild`; rebuilding selects advisory scans, but
 a review-policy change need not rebuild. For scan-only work, retrieve the native
 variant from the immutable published index and retain an archive for SBOM/review
 and scanning. Verify platform and image ownership, preserve its digest, and refuse
 to overwrite a build archive. Retain diagnostics even on scan failure. Do not emit
 new `tested: true` publication metadata or qualified publication archives for
-scan-only work. Keep the high severity gate and fail-closed evidence checks identical to build scans.
+scan-only work. Keep security outcomes non-blocking for both build and scan-only
+paths; report high/critical findings and unavailable evidence instead of failing CI.
 
 Use an isolated job service to transfer candidates by digest. Keep external
 publication TLS-verified and private HTTP limited to the documented fixture

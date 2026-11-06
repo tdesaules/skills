@@ -62,7 +62,8 @@ routing and syntax checks remain independently usable.
   images under SemVer or `latest` aliases. Keep upstream tool versions intact and
   document technical signature tags separately. Reuse unchanged image digests.
 - Keep Buildah, Skopeo, Syft, Grype and Cosign containerized. Use **Grype, not Trivy**,
-  with the `high` severity gate and fail-closed advisory evidence. Schedule
+  with non-blocking security reporting; highlight high/critical findings without
+  making them a CI/release gate. Schedule
   containerized Renovate/rescans, with dedicated bot credentials and no duplicate
   hosted Renovate App execution.
 - Prefer rootless Podman for local diagnostics. Use approved PowerShell verb–noun
@@ -102,6 +103,13 @@ event matrix, needs graph, output names, artifacts, and success criteria.
 Require every selected dependency to succeed. A skipped dependency is acceptable
 only when check explicitly declared that phase empty. Tags never rebuild images;
 maintenance never enters release. Never treat skipped required tests as success.
+
+Security checks are an explicit exception to failure propagation, not to reporting.
+Read [the advisory security policy](references/security-policy.md) when implementing
+SBOMs, scans, advisory reviews, signing, verification, or their status aggregation.
+Findings and security-tool failures must not fail jobs or block publication.
+Keep functional tests, build success, exact-artifact checks and publication errors
+blocking. `tested: true` means functional qualification, not security approval.
 
 ## Workflow
 

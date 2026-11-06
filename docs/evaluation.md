@@ -1,8 +1,9 @@
 # Evaluation workflow
 
 The seven `evals/evals.json` files contain behavioral prompts and six activation
-queries each. GitHub Actions has eight behavioral cases, including six-job routing,
-prepare/tag separation, maintenance isolation, and qualification evidence; other
+queries each. GitHub Actions has ten behavioral cases, including six-job routing,
+prepare/tag separation, maintenance isolation, qualification evidence and advisory
+security failures; other
 skills have four initial cases each. Inline scenarios need no additional files unless the case explicitly
 asks for a disposable fixture. Prepare those fixtures before running either arm;
 give both arms identical copies. Record the resulting task prompt separately from

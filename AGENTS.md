@@ -16,6 +16,8 @@
   Commit proactively by default, load conventionalcommits first, and include a why-body.
 - Agent portability does not mean removing user conventions. Preserve the GitHub
   Actions main.yml/six-job/Docker/scratch/Grype contract and the container allowlist.
+- Security reporting in GitHub Actions is advisory, including tool/signature errors;
+  keep functional tests and exact-artifact/publication failures blocking.
 
 ## Verification
 

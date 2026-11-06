@@ -1,5 +1,14 @@
 # Portability and skill review
 
+## Subsequent security policy change
+
+At the user's request, GitHub Actions security reporting is now non-blocking:
+Syft/Grype, advisory reviews, Cosign signing/verification and security-report upload
+findings or errors do not gate CI/release. The previous high/fail-closed gate in
+the historical review below is superseded. Functional tests, exact-artifact checks
+and publication operations remain blocking; base-image selection rules remain.
+See the policy linked from github-actions/SKILL.md for status/reporting semantics.
+
 ## Correction after user review
 
 The initial migration generalized personal policies too broadly. At the user's

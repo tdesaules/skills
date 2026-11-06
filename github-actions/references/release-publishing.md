@@ -24,10 +24,10 @@ For a catalog whose metadata pins prebuilt action images:
    git-cliff/Conventional Commits and the explicit bump policy; handle first release
    and no-bump cases without inventing an initial version.
 2. Build selected components and transfer source-bound archives/checksums to tests.
-   Qualify the exact AMD64/ARM64 artifacts, including action interfaces, Syft SBOMs
-   and Grype scans. Do not rebuild in the test job.
-3. Push those artifacts, capture registry digests, and perform required signing and
-   verification. Preserve the multi-platform index rather than publishing only the
+   Qualify exact AMD64/ARM64 artifacts through functional action tests and integrity
+   checks; attempt Syft/Grype reporting as non-blocking steps. Do not rebuild in test.
+3. Push those artifacts, capture registry digests, and attempt non-blocking signing
+   and signature verification. Preserve the multi-platform index rather than publishing only the
    current runner's native platform.
 4. Update action digest references in a single writer; preserve unchanged digests.
    Check that all referenced images are accessible to intended consumers.
@@ -61,18 +61,22 @@ qualification markers, and compatible run attempts before promotion.
   credentials serve different purposes. Verify their actual permissions separately.
 - Use minimum job permissions. For keyless signing, grant `id-token: write` to the
   signing job and test token acquisition from its actual container/runtime.
-- Verify signature identity and issuer against policy, not merely signature presence.
+- Check signature identity and issuer, not merely presence; report invalid, missing
+  or unavailable signatures without blocking publication. Preserve actual outcomes.
 - Scope concurrency so development cancellation cannot interrupt publication.
   A concurrency group does not prevent external pushes: recheck captured revisions.
-- Publication requires successful necessary validations. A review request does not
+- Publication requires successful functional and artifact validations, not clean
+  scans or successful signing. A review request does not
   authorize pushing commits, tags, images, or release records.
 
 ## Maintenance
 
-Use containerized Syft and Grype (not Trivy), with the high severity gate and a
-documented database-freshness policy. Fail closed when required advisory symbols
-or exact patched-file evidence are absent, ambiguous or altered. Do not weaken the
-gate or add broad suppressions to pass CI. Retain reports on failures without masking exit codes. Rescan published
+Use containerized Syft and Grype (not Trivy) as non-blocking security operations.
+Highlight high/critical findings and document database freshness. Report absent,
+ambiguous or altered advisory evidence as unresolved, not as a successful review
+and not as a CI failure. Retain real exit codes/diagnostics while allowing the
+job and release to continue, following the security policy linked from SKILL.md.
+Rescan published
 digests without rebuilding when only vulnerability data or review policy changed.
 
 Schedule containerized Renovate with dedicated bot/App credentials; disable duplicate
