@@ -139,6 +139,10 @@ blocking. `tested: true` means functional qualification, not security approval.
 5. For container actions, read [Docker action contracts](references/docker-actions.md).
    Verify runner support, inputs/outputs, workspace permissions, and the actual image.
 6. For releases or maintenance, read [publication](references/release-publishing.md).
+   Apply its git-cliff bump policy, Keep a Changelog notes, annotated release tags,
+   optional recommended assets, and OCI/ORAS distribution defaults with native-format
+   and binary-download exceptions. Use the `conventionalcommits` and `commit`
+   companions for message semantics and Git mutations respectively.
    Publish the tested artifact rather than rebuilding it; never invent a digest.
 7. Run appropriate local checks and targeted fixtures; exercise remote paths only
    within the task's authorization and available access. Report evidence separately

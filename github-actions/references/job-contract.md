@@ -31,7 +31,9 @@ changes test existing image digests, scan-policy-only changes scan existing dige
 without rebuild. A genuinely empty selection emits false flags and empty matrices;
 only check runs. In prepare mode, no version bump is a successful explicit no-op:
 emit the reason and empty phase selections, with no publication or tag creation.
-On a first release, require the configured initial version and build all components.
+During initial development keep version 0.1.0 without automatic releases; the first
+official release explicitly selects 1.0.0 and builds all components. Explicitly
+opted-in 0.x releases follow the publication policy's pre-1.0 bump rules.
 
 ## Shared plan and interfaces
 
@@ -159,13 +161,16 @@ ownership, or inconsistent flags/matrices. Use the same selector for reuse check
   namespace, attempt non-blocking Cosign signing/verification of remote digests,
   preserve exact verified reused image digests,
   update action references/notes with one writer, recheck main and tag absence,
-  then atomically push the final commit plus no-v SemVer tag. Use the trigger
+  then create a `chore(release): prepare X.Y.Z` commit with a why-body and an
+  annotated no-v SemVer tag on that commit; atomically push both. Use the trigger
   credential flow documented by the release policy. Do not create the GitHub
   Release here; the tag run does that.
 - **Publish (tag):** verify tag/version/source policy, all published image references
   and complete functional test evidence. Attempt advisory signature/attestation
   verification without gating publication on its result; create/update only
-  the matching GitHub Release notes/assets idempotently. Never rebuild images,
+  the matching GitHub Release notes/assets idempotently, using Keep a Changelog
+  notes and the optional asset/OCI distribution policy. Publish without draft or
+  prerelease status; update latest only for the newest stable version. Never rebuild images,
   mint a new tag, move an existing tag, or republish replacement images.
 - **Outputs:** release evidence with image source commits, final catalog commit,
   version/tag, verified registry digests, actual signing/verification outcomes, and observed release URL
