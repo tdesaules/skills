@@ -64,6 +64,7 @@ Outside this user's contract, acknowledge explicitly chosen valid abstractions
 without presenting them as the catalog default.
 
 Official references:
+
 - https://docs.github.com/en/actions/tutorials/use-containerized-services/create-a-docker-container-action
 - https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-composite-action
 - https://docs.github.com/en/actions/sharing-automations/reusing-workflows

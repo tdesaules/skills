@@ -1,0 +1,14 @@
+FROM docker.io/library/alpine:3.23@sha256:f3d55900449227ae9e237ede521e7b665d53a253b42065ba90b9db9275e198ad AS build
+RUN apk add --no-cache go=1.25.10-r0
+WORKDIR /src
+COPY main.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /entrypoint main.go
+RUN CGO_ENABLED=0 GOBIN=/out go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+
+FROM scratch AS runtime
+COPY --from=build /entrypoint /entrypoint
+COPY --from=build /out/actionlint /actionlint
+USER 65532:65532
+WORKDIR /github/workspace
+ENTRYPOINT ["/entrypoint"]
+LABEL org.opencontainers.image.source="https://github.com/tdesaules/skills" org.opencontainers.image.licenses="GPL-3.0-or-later"

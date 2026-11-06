@@ -126,6 +126,7 @@ For reviews use `file:line → defect → consequence → correction`. Treat har
 preferences as recommendations unless the target's contract makes them required.
 
 Sources:
+
 - https://docs.podman.io/en/latest/markdown/podman-build.1.html
 - https://docs.docker.com/build/building/best-practices/
 - https://github.com/compose-spec/compose-spec/blob/main/spec.md

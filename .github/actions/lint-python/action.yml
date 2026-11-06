@@ -1,0 +1,5 @@
+name: Lint Python
+description: Check Python syntax, imports, names and whitespace with pinned Ruff
+runs:
+  using: docker
+  image: Dockerfile

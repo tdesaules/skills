@@ -1,0 +1,92 @@
+name: main
+
+on:
+  push:
+    branches: ['**']
+    tags: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skills-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Native Docker source actions bootstrap the CI until qualified images are
+# published and action.yml references are pinned to their real registry digests.
+# No business-operation run steps or generic runtime dispatcher.
+jobs:
+  check:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Validate skills, evaluations and local links
+        uses: ./.github/actions/check
+
+  lint:
+    needs: check
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Lint Python
+        uses: ./.github/actions/lint-python
+      - name: Lint Markdown
+        uses: ./.github/actions/lint-markdown
+      - name: Lint GitHub workflow
+        uses: ./.github/actions/lint-workflow
+
+  build:
+    # This repository distributes skill source, not application build artifacts.
+    if: ${{ false }}
+    needs: [check, lint]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+  test:
+    needs: [check, lint, build]
+    if: >-
+      ${{ !cancelled() && needs.check.result == 'success' &&
+          needs.lint.result == 'success' && needs.build.result == 'skipped' }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Run validator unit suites
+        uses: ./.github/actions/test-python
+
+  release:
+    # No automated versioning or publication of this skill collection is configured.
+    if: ${{ false }}
+    needs: [check, lint, build, test]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+  maintenance:
+    # External-link checks and Renovate are not enabled implicitly.
+    if: ${{ false }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1

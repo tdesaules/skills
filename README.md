@@ -67,6 +67,15 @@ required by this collection. Skill names are unchanged.
 
 ## Validate
 
+The [CI workflow](docs/ci.md) uses dedicated Docker actions for repository checks,
+lint and unit tests. Its source-action bootstrap still needs native ARM64/hosted
+qualification and GHCR publication before transition to prebuilt digest references.
+
+```bash
+uv run scripts/check_repository.py .
+uv run --with PyYAML==6.0.3 --with markdown-it-py==4.0.0 --with mdurl==0.1.2 python tests/run.py
+```
+
 From the repository root (Python 3.10+ and [uv](https://docs.astral.sh/uv/) required):
 
 ```bash

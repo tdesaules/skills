@@ -1,0 +1,20 @@
+FROM docker.io/library/alpine:3.23@sha256:f3d55900449227ae9e237ede521e7b665d53a253b42065ba90b9db9275e198ad AS build
+RUN apk add --no-cache go=1.25.10-r0 nodejs=24.22.1-r1 npm=11.11.0-r0
+WORKDIR /src
+COPY main.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /entrypoint main.go
+WORKDIR /opt/markdownlint
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts --omit=dev
+RUN apk --root /runtime --initdb --no-cache --keys-dir /etc/apk/keys --repositories-file /etc/apk/repositories add nodejs=24.22.1-r1
+RUN mkdir -p /runtime/tmp && chmod 1777 /runtime/tmp
+
+FROM scratch AS runtime
+COPY --from=build /runtime/ /
+COPY --from=build /entrypoint /entrypoint
+COPY --from=build /opt/markdownlint /opt/markdownlint
+ENV PATH=/usr/bin:/bin HOME=/tmp
+USER 65532:65532
+WORKDIR /github/workspace
+ENTRYPOINT ["/entrypoint"]
+LABEL org.opencontainers.image.source="https://github.com/tdesaules/skills" org.opencontainers.image.licenses="GPL-3.0-or-later"

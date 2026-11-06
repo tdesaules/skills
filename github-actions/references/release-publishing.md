@@ -92,6 +92,7 @@ Report runner/platform coverage, actual digests, command results, and hosted run
 links only when observed. Explicitly mark untested registry/signing/remote paths.
 
 Sources:
+
 - https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 - https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect
 - https://docs.sigstore.dev/cosign/signing/signing_with_containers/

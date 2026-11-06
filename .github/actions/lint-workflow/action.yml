@@ -1,0 +1,5 @@
+name: Lint workflow
+description: Validate main.yml with pinned actionlint
+runs:
+  using: docker
+  image: Dockerfile

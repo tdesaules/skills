@@ -1,0 +1,5 @@
+name: Check skills repository
+description: Validate skill metadata, evaluation JSON and local documentation links
+runs:
+  using: docker
+  image: Dockerfile

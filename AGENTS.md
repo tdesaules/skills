@@ -27,6 +27,8 @@ From repository root, with Python 3.10+ and uv:
 uv run skill/scripts/validate.py --collection .
 uv run skill/scripts/validate.py ./helm # focused skill check
 uv run --with PyYAML==6.0.3 python -m unittest discover -s skill/scripts
+uv run scripts/check_repository.py .
+uv run --with PyYAML==6.0.3 --with markdown-it-py==4.0.0 --with mdurl==0.1.2 python tests/run.py
 ```
 
 - Append `-k test_links_missing_escape_and_valid` to the unittest command for one test.
@@ -40,6 +42,16 @@ uv run --with PyYAML==6.0.3 python -m unittest discover -s skill/scripts
 - `evals/evals.json` contains test specifications, not benchmark results. Follow
   `docs/evaluation.md` for isolated comparisons; templates in references also require
   target-environment validation before claiming they work.
+
+## CI infrastructure
+
+- This repo's six-job adaptation is in docs/ci.md: check/lint/test run fully;
+  build/release/maintenance are deliberately skipped, with no publication side effects.
+- `.github/actions/*/Dockerfile` symlinks select their Containerfile for native
+  source-action bootstrap. Do not replace them with host/composite scripts.
+- `scripts/qualify_ci_actions.py --output <external-directory>` builds/tests/archives
+  exact native images. Publication requires both native platforms and actual GHCR
+  digests; source-action CI is not the completed prebuilt-image catalog contract.
 
 ## Git
 

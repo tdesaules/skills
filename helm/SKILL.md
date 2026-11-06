@@ -87,6 +87,7 @@ values/API coverage, and any untested cluster path. Never reproduce secret value
 from rendered manifests or release output in the report.
 
 Sources:
+
 - https://helm.sh/docs/chart_best_practices/
 - https://helm.sh/docs/chart_template_guide/
 - https://helm.sh/docs/topics/charts_hooks/

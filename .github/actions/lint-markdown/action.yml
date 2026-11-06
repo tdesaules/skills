@@ -1,0 +1,5 @@
+name: Lint Markdown
+description: Check Markdown layout with pinned markdownlint-cli2
+runs:
+  using: docker
+  image: Dockerfile

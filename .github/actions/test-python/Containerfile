@@ -1,0 +1,17 @@
+FROM docker.io/library/alpine:3.23@sha256:f3d55900449227ae9e237ede521e7b665d53a253b42065ba90b9db9275e198ad AS build
+RUN apk add --no-cache go=1.25.10-r0 python3=3.12.16-r0 py3-pip=25.1.1-r1
+WORKDIR /src
+COPY main.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /entrypoint main.go
+RUN apk --root /runtime --initdb --no-cache --keys-dir /etc/apk/keys --repositories-file /etc/apk/repositories add python3=3.12.16-r0
+RUN python3 -m pip install --no-cache-dir --no-deps --target /runtime/opt/python PyYAML==6.0.3 markdown-it-py==4.0.0 mdurl==0.1.2
+RUN mkdir -p /runtime/tmp && chmod 1777 /runtime/tmp
+
+FROM scratch AS runtime
+COPY --from=build /runtime/ /
+COPY --from=build /entrypoint /entrypoint
+ENV PATH=/usr/bin:/bin PYTHONPATH=/opt/python PYTHONDONTWRITEBYTECODE=1 HOME=/tmp
+USER 65532:65532
+WORKDIR /github/workspace
+ENTRYPOINT ["/entrypoint"]
+LABEL org.opencontainers.image.source="https://github.com/tdesaules/skills" org.opencontainers.image.licenses="GPL-3.0-or-later"

@@ -164,6 +164,7 @@ for success, skipped lint, failed lint, cancelled build and tag events. Unit tes
 of a selector do not replace a real GitHub run of job/step conditions.
 
 Official references:
+
 - https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
 - https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
 - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions

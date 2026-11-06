@@ -1,0 +1,5 @@
+name: Test skill validators
+description: Run the skill and repository validator unit suites
+runs:
+  using: docker
+  image: Dockerfile
