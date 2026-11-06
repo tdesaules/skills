@@ -3,7 +3,7 @@ name: github-actions
 description: >-
   Use when creating, reviewing, or debugging GitHub Actions workflows or action.yml:
   main.yml orchestration, changed-file matrices, dedicated Docker actions with
-  scratch runtimes, GHCR publication, and release routing. Apply the user's catalog
+  allowlisted runtime bases, GHCR publication, and release routing. Apply the user's catalog
   and Pantavisor CI conventions. Not for standalone Containerfiles, generic Git
   operations, or GitLab CI.
 license: GPL-3.0-or-later
@@ -45,11 +45,14 @@ routing and syntax checks remain independently usable.
 - Give each specialized operation its own directory, `action.yml`, `Containerfile`,
   fixed-operation Go executable, README, and tests. Put linters under `lint/<linter>/`.
   Do not introduce a generic runtime operation selector.
-- Build each action's own image in multiple stages ending in **`FROM scratch`**.
-  Copy its complete runtime closure, including interpreters/libraries when the tool
-  needs them, certificates, configuration and licenses. Apply the `container`
-  allowlist to builders/donor images too; the scratch rule is a stricter catalog
-  runtime choice. Report missing runtime dependencies instead of silently changing bases.
+- Build each action's own image in multiple stages. **Prefer `FROM scratch` when
+  the executable and its complete runtime dependencies are suited to it**, especially
+  for static tools. Otherwise choose a compatible runtime base from the `container`
+  allowlist, including for actions needing interpreters, libraries, build tools or
+  a complete distribution environment. Do not force manual reconstruction of that
+  environment inside scratch. Explain the choice from actual runtime needs; this
+  is the general selection rule, not a per-tool exception. Apply the allowlist to
+  every stage and external donor image, and retain required configuration/licenses.
 - Released actions use `runs.using: docker` and verified `docker://...@sha256:...`
   references. Invoke operations with named, direct `uses:` steps; keep conditions,
   matrices, permissions and artifact transfer visible. Host Python, `docker run`,
@@ -171,7 +174,7 @@ dependencies, skipped and failed jobs, invalid inputs, filenames with spaces,
 artifact ownership, partial retries, and release races. Keep reports on failures.
 
 Audit all six jobs for business-operation `run:` steps and temporary bridges.
-Inspect every action's actual runtime, dedicated multistage scratch recipe and
+Inspect every action's actual runtime, dedicated multistage recipe, allowed bases and
 native variants. Test artifact pagination and exclude private signing material.
 
 Return `file:line → defect → consequence → correction` for reviews. For edits,

@@ -45,7 +45,7 @@ gate, severity exception workflow, or mandatory remediation to restore blocking.
 
 ## Still required for correct execution
 
-Keep the configured base allowlist, scratch runtime, digest pinning, minimum
+Keep the configured base allowlist, needs-based runtime selection, digest pinning, minimum
 permissions, and secret-handling instructions as construction/configuration rules.
 This change does not authorize choosing unlisted bases or leaking secrets.
 Security audit reports about those rules remain advisory; report deviations plainly.

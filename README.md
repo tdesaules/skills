@@ -13,7 +13,7 @@ see [LICENSE](LICENSE).
 | [commit](commit/SKILL.md) | Proactive local commits, required why-body, unpublished history; requires conventionalcommits |
 | [conventionalcommits](conventionalcommits/SKILL.md) | Message types, scopes, breaking changes; no Git mutation |
 | [container](container/SKILL.md) | OCI builds, Compose, Quadlet, runtime diagnosis |
-| [github-actions](github-actions/SKILL.md) | Personal main.yml/six-job CI contract, dedicated Docker/scratch actions, GHCR releases |
+| [github-actions](github-actions/SKILL.md) | Personal main.yml/six-job CI contract, dedicated Docker actions, allowlisted runtime bases, GHCR releases |
 | [helm](helm/SKILL.md) | Charts, values, templates, dependencies, releases |
 | [skill](skill/SKILL.md) | Portable skill authoring, validation, evaluation |
 
@@ -24,8 +24,10 @@ images. See [the policy](container/SKILL.md#base-image-allowlist) for exact repo
 
 Agent portability preserves personal repository conventions. `github-actions`
 retains the main.yml/six-job layout, no PR trigger by default, dedicated Go/Docker
-actions with scratch runtimes, advisory Grype reporting, no-v Git tags, and the personal
+actions with needs-based allowlisted runtimes, advisory Grype reporting, no-v Git tags, and the personal
 GHCR namespace. These are project choices, not Agent Skills or GitHub requirements.
+Prefer scratch where suitable; actions requiring a complete environment may use
+another base from the container allowlist without a tool-specific exception.
 The [six-job contract](github-actions/references/job-contract.md) defines event
 routing, dependencies, inputs/outputs, artifacts, and success criteria per job.
 The [security policy](github-actions/references/security-policy.md) keeps SBOMs,

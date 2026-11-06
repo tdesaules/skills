@@ -15,9 +15,12 @@ INPUT_* values, then documented defaults.
 
 Use the companion container skill's base-image allowlist for all stages and external
 image sources; verify the ancestry of prebuilt action images. Build in multiple
-stages ending in FROM scratch. Copy the complete required runtime closure: static
-binary, or executable plus its interpreter/dynamic libraries and required files.
-Do not silently replace the scratch runtime when closure is incomplete. Check the
+stages and prefer scratch when the executable and complete runtime closure fit it.
+For interpreters, libraries, build tools or a full distribution environment, choose
+a compatible allowlisted runtime rather than forcing that environment into scratch.
+Document the actual dependency requirements behind the choice; no tool-specific
+exception is needed for an allowed base. Include required configuration and licenses.
+Check the
 actual Docker action workspace/UID behavior; do not mechanically copy an application
 image's non-root settings without testing writable outputs on the runner.
 

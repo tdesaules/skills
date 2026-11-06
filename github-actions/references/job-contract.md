@@ -109,7 +109,9 @@ ownership, or inconsistent flags/matrices. Use the same selector for reuse check
   successful check and lint, or lint skipped only when has_lint is false.
 - **Work:** use the dedicated Buildah action and the qualified launcher profile to
   build each selected component natively on AMD64/ARM64. Enforce the container
-  base allowlist and final scratch closure. Use bounded matrices with fail-fast false.
+  base allowlist in every stage. Prefer scratch where the runtime closure fits;
+  otherwise use a compatible allowlisted runtime and document its requirements.
+  Use bounded matrices with fail-fast false.
 - **Outputs:** one OCI archive per component/platform and an untested receipt:
   schema_version, source_sha, component, arch, candidate/version identity,
   archive filename, SHA-256 checksum, workflow run/attempt, and `tested: false`.

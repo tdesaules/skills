@@ -1,5 +1,14 @@
 # Portability and skill review
 
+## Subsequent runtime-base policy change
+
+At the user's request, scratch is now preferred when suitable, not mandatory for
+every catalog action. Actions needing interpreters, libraries, build tools or a
+complete environment may use another compatible base from the container allowlist.
+This is a general rule, not a KAS-specific exception. Multistage dedicated images
+and all-stage/donor allowlisting remain required. Historical references below to
+mandatory scratch runtimes are superseded by this change.
+
 ## Subsequent security policy change
 
 At the user's request, GitHub Actions security reporting is now non-blocking:
