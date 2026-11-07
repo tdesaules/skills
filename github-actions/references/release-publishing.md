@@ -135,6 +135,27 @@ qualification markers, and compatible run attempts before promotion.
 
 ## Authentication and conditions
 
+- Use one shared bot GitHub App for release preparation and Renovate (for example,
+  `niri-tonic-bot` in the niri-tonic organization). Configure the Actions variable
+  `BOT_APP_ID` with its App ID and the Actions secret `BOT_APP_PRIVATE_KEY` with
+  the complete PEM private key. Organization-level values must authorize each
+  consuming repository. These names replace `RELEASE_APP_ID` and
+  `RELEASE_APP_PRIVATE_KEY`; no personal access token or `RENOVATE_TOKEN` is needed.
+- Install the App on the selected repositories. Each release-preparation or
+  maintenance job calls `actions/create-github-app-token` pinned to a verified
+  commit, with `app-id: ${{ vars.BOT_APP_ID }}`,
+  `private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}`,
+  `owner: ${{ github.repository_owner }}`, and
+  `repositories: ${{ github.event.repository.name }}`. Pass that step's temporary
+  token directly to the consuming action; never persist it in artifacts or reuse
+  a token across jobs. Preserve the token action's automatic revocation.
+- For the shared release/Renovate App, configure repository **Contents, Pull
+  requests, Issues and Workflows: read/write**, and **Actions: read**. Renovate's
+  supported App setup also lists **Commit statuses and Checks: read/write**,
+  **Administration and Dependabot alerts: read**, and organization **Members:
+  read**. Grant merge-queue permissions only when using merge queues. Confirm the
+  current Renovate platform requirements and approve changed installation
+  permissions. Webhooks are unnecessary for an App used only by these workflows.
 - Events created with normal `GITHUB_TOKEN` generally do not trigger new runs;
   workflow/repository dispatch are documented exceptions. Choose explicit dispatch
   or an appropriately scoped App token for chained release events.
@@ -160,7 +181,8 @@ job and release to continue, following the security policy linked from SKILL.md.
 Rescan published
 digests without rebuilding when only vulnerability data or review policy changed.
 
-Schedule containerized Renovate with dedicated bot/App credentials; disable duplicate
+Schedule containerized Renovate with the shared bot App's job-local installation
+token described above; disable duplicate
 hosted Renovate App execution before enabling it. Inspect manager/file coverage,
 validate configuration, and run an authenticated dry-run when authorized.
 Distinguish valid configuration, successful authentication, actual
@@ -174,6 +196,7 @@ links only when observed. Explicitly mark untested registry/signing/remote paths
 
 Sources:
 
+- https://docs.renovatebot.com/modules/platform/github/#running-as-a-github-app
 - https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 - https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect
 - https://docs.sigstore.dev/cosign/signing/signing_with_containers/

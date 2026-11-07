@@ -72,8 +72,12 @@ routing and syntax checks remain independently usable.
 - Keep Buildah, Skopeo, Syft, Grype and Cosign containerized. Use **Grype, not Trivy**,
   with non-blocking security reporting; highlight high/critical findings without
   making them a CI/release gate. Schedule
-  containerized Renovate/rescans, with dedicated bot credentials and no duplicate
-  hosted Renovate App execution.
+  containerized Renovate/rescans, with the shared bot GitHub App and no duplicate
+  hosted Renovate App execution. Use `vars.BOT_APP_ID` and
+  `secrets.BOT_APP_PRIVATE_KEY` for both release preparation and Renovate;
+  each job generates its own repository-scoped installation token using the
+  official App-token action pinned by commit. Do not use a personal access token
+  or introduce `RELEASE_APP_*` / `RENOVATE_TOKEN` credentials for this flow.
 - Prefer rootless Podman for local diagnostics. Use approved PowerShell verb–noun
   operation names and lowercase `taskfile.yml` for optional tooling; consumers must
   not need Task. Leave Pantavisor consumer repositories unchanged unless requested.
@@ -151,7 +155,7 @@ blocking. `tested: true` means functional qualification, not security approval.
 Use the same selector for matrices, publication plans and artifact-reuse validation.
 Keep scan-only work distinct from rebuilding and from new publication qualification.
 Before remote work, check the source-push identity's workflow permissions separately
-from job, release-App, signing and Renovate identities; do not expose tokens.
+from job, shared bot App, registry and signing credentials; do not expose tokens.
 
 ## Gotchas
 

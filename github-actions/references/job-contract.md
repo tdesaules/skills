@@ -184,7 +184,7 @@ ownership, or inconsistent flags/matrices. Use the same selector for reuse check
 ## maintenance
 
 - **Inputs:** schedule or explicit mode=maintenance on main, current catalog image
-  digests, dependency configurations, dedicated Renovate credentials and scan policy.
+  digests, dependency configurations, shared bot App credentials and scan policy.
   No needs: this job must not depend on the five intentionally skipped jobs.
 - **Work:** validate its own ref/mode, run containerized Renovate, refresh vulnerability
   data and rescan published native images with Syft/Grype, and check external links.
@@ -200,7 +200,8 @@ ownership, or inconsistent flags/matrices. Use the same selector for reuse check
   triggers do not prohibit Renovate from creating dependency PRs.
 - **Effects:** dependency-update branches/PRs only for Renovate; no image builds,
   release preparation, image promotion, catalog tags, or GitHub Release creation.
-  Use separate bot credentials and concurrency group from release.
+  Generate a separate installation token from the shared `BOT_APP_ID` /
+  `BOT_APP_PRIVATE_KEY` credentials; keep a separate concurrency group from release.
 
 ## Conditions and failure semantics
 
