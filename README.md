@@ -13,7 +13,7 @@ see [LICENSE](LICENSE).
 | [commit](commit/SKILL.md) | Proactive local commits, required why-body, unpublished history; requires conventionalcommits |
 | [conventionalcommits](conventionalcommits/SKILL.md) | Message types, scopes, breaking changes; no Git mutation |
 | [container](container/SKILL.md) | OCI builds, Compose, Quadlet, runtime diagnosis |
-| [devenv](devenv/SKILL.md) | Repository-local QEMU/Fedora CoreOS development environments, project configuration, lifecycle and onboarding |
+| [devenv](devenv/SKILL.md) | QEMU/Fedora CoreOS via the .devenv Git submodule, local config.k, Task integration and VM lifecycle |
 | [github-actions](github-actions/SKILL.md) | Separate CI/release/maintenance workflows, dedicated Docker actions, allowlisted runtime bases, GHCR releases |
 | [helm](helm/SKILL.md) | Charts, values, templates, dependencies, releases |
 | [skill](skill/SKILL.md) | Portable skill authoring, validation, evaluation |
@@ -61,7 +61,8 @@ not an optional message-format fallback. When using the collection's image polic
 also make `container` available to `helm` and `github-actions`.
 For `devenv`, provide `container` when adding guest containers and `chezmoi` when
 changing managed host networking; Git work uses `commit` with `conventionalcommits`.
-The qemu-dev-env runtime is an external pinned dependency, not bundled with the skill.
+The qemu-dev-env runtime is integrated as the `.devenv` Git submodule; its local
+`config.k` is adapted from `exemple.config.k` and remains ignored by Git.
 
 ### Migration from `opencode/`
 

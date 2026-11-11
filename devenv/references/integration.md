@@ -1,4 +1,4 @@
-# Integrate and distribute the runtime
+# Integrate the .devenv Git submodule
 
 ## Source baseline
 
@@ -19,22 +19,47 @@ claim of successful VM qualification.
 Do not import upstream AGENTS.md wholesale into the target: instructions for
 maintaining the runtime are not necessarily instructions for the application.
 
-## Dependency layout
+## Submodule contract
 
-Preserve an existing installation method. For a new Git target, prefer a pinned
-submodule at `.devenv` when consistent with the repository's dependency conventions.
-Record the upstream URL and gitlink; document `git submodule update --init --recursive`
-for fresh clones. Do not follow a moving branch at every `up`.
+Use the `thales-genai-lab` integration as the reference pattern, in an existing or
+new target repository. `.devenv` is a Git submodule, not a copied runtime directory
+or an unmanaged nested clone. Its `.gitmodules` entry is:
 
-If the project uses vendored sources instead, copy only the required tracked source
-files, helpers and upstream license, record the upstream commit and local patches,
-and document the update procedure. Do not introduce a nested unmanaged clone or
-depend on the author's absolute checkout path. Use the Git companion for mutations.
+```ini
+[submodule ".devenv"]
+    path = .devenv
+    url = https://github.com/tdesaules/qemu-dev-env.git
+```
+
+Inspect existing state first. If absent, use the Git companion to add the submodule
+with `git submodule add https://github.com/tdesaules/qemu-dev-env.git .devenv`.
+If registered but uninitialized, use `git submodule update --init --recursive -- .devenv`.
+Do not overwrite an existing directory or register the same submodule twice.
+The parent records `.gitmodules` and the gitlink commit; configuration remains local
+inside the submodule. No new clone of the target is required to add this integration.
+Do not introduce vendoring or a second recipe directory unless explicitly requested.
 
 Keep the runtime internally named `taskfile.qemu.yaml`: recursive `status` calls
 refer to that name. Integrate into the target's existing Taskfile; for a new root
 entrypoint use lowercase `taskfile.yml`. Do not rename an existing `taskfile.yaml`
 or replace its tasks merely for this preference.
+
+The reference include is:
+
+```yaml
+includes:
+  devenv:
+    taskfile: ./.devenv/taskfile.qemu.yaml
+    dir: ./.devenv
+```
+
+Merge it into the existing Taskfile. Validate the actual path behavior described
+below rather than treating this include as proof of correct workspace sharing.
+Add root `up` calling `devenv:up` with `attach: "false"`, `down` calling
+`devenv:down`, and `ssh` calling `devenv:ssh` where these names are available.
+Preserve existing tasks on conflicts. A project `dev` task can sequence VM startup,
+project bootstrap and SSH. Zed/OpenCode tasks are optional project conveniences;
+do not copy the lab's cluster/secrets bootstrap into unrelated projects.
 
 Desired interface: `task devenv:check`, `task devenv:up attach=false`,
 `task devenv:status`, `task devenv:ssh`, `task devenv:logs`, `task devenv:mgmt`,
@@ -77,22 +102,30 @@ submodule or an unavailable local-only commit is not a distributable integration
 Report remote availability as unresolved if publishing the prerequisite is outside
 authorization; do not silently push it.
 
-## Shareable versus local configuration
+## Local config.k and updates
 
-Keep a project-specific recipe, for example `dev/devenv.config.k`, in target Git.
-It is an initialization source copied into `.devenv/config.k`; its `.schema` import
-resolves there, not at the recipe's storage location. Document that distinction.
-Provide an init operation that copies only when the destination is absent and
-otherwise preserves user changes. Treat later recipe updates as an explicit merge
-or refresh, not an overwrite on every startup.
+Create `.devenv/config.k` from `.devenv/exemple.config.k` only if absent. Adapt that
+local file directly to the target's hardware, packages, mise tools, files and units.
+Preserve an existing config and merge requested changes deliberately. The submodule
+already ignores config.k; do not force-add it or require a tracked duplicate in the
+parent. Document the project-specific configuration and setup in the target README.
+A tracked recipe or generator may be added only when requested, not as a condition
+for completing the standard integration.
 
 Ignore generated paths at their actual location: `config.k`, `config.bu`,
 `config.ign`, `.uuid` and `.task` within the runtime directory; include root `.task`
 if the wrapper creates it. A submodule has its own ignore rules. Do not broadly
 ignore `.devenv` when its source or gitlink must be committed. Keep qcow2 images,
-PID/log files and credentials out of Git. Preserve license notices when vendoring.
+PID/log files and credentials out of Git.
 
-Fresh-clone acceptance: initialize the pinned dependency, initialize local config,
+Acceptance in the target checkout: initialize the submodule and local config,
 run host checks, render, start, reach the shared project and run its smoke command.
-Dependency updates must preserve personal config/identity and record the new pin;
-FCOS updates require matching release and checksums for both native architectures.
+On another checkout, the same setup requires submodule initialization and creation
+of its own ignored config.k; Git does not transport personal config or VM state.
+
+Keep updates explicit, separate from `up`: the lab exposes `task git:sub-module`
+in `taskfile.git.yaml`, runs `git submodule update --remote .devenv`, then records
+the changed gitlink in a parent commit. Adapt this interface to target Git policy,
+including approval requirements and a why-body; never push automatically. Inspect
+submodule changes before updating and preserve config/identity. FCOS updates belong
+to the runtime and require matching release and checksums for both architectures.

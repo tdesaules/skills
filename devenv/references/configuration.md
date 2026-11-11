@@ -7,10 +7,11 @@ The local configuration imports `.schema as schema` and binds
 paths; `_usr` is not defined. Read host paths with `file.read_env('HOME')` after
 importing `file`, not an uninjected `option('HOME')`.
 
-Start from the small bundled recipe rather than upstream's demo:
-`assets/project.config.k` relative to this skill's root. Add only project needs.
-Copy it beside `schema.k` as `config.k` before rendering. Hardware values in that
-recipe are illustrative; choose actual CPU/RAM/disk from the project's workload.
+Initialize `.devenv/config.k` from the submodule's `.devenv/exemple.config.k` only
+when absent, then adapt it directly. Remove irrelevant demo files, services and
+personal paths from the new local config; retain defaults and additions required
+by the project. Choose CPU/RAM/disk from the workload, not the example's values.
+Existing config.k is user-owned and must not be replaced by the example on reruns.
 
 | Field | Meaning and adaptation |
 | --- | --- |

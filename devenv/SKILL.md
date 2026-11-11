@@ -2,8 +2,9 @@
 name: devenv
 description: >-
   Use when adding, distributing, configuring, or troubleshooting a repository-local
-  QEMU development environment based on qemu-dev-env: Fedora CoreOS, KCL, Butane,
-  Ignition, Task integration, shared workspace, SSH and VM lifecycle. Adapt the VM
+  QEMU development environment using the qemu-dev-env Git submodule at .devenv:
+  local config.k, Fedora CoreOS, KCL, Butane, Ignition, Task integration, shared
+  workspace, SSH and VM lifecycle. Adapt the VM
   to the target project's tools and services. Not for Nix devenv, Python virtualenvs,
   standalone containers, production VM fleets, or QEMU emulator development.
 license: GPL-3.0-or-later
@@ -15,8 +16,11 @@ compatibility: Integration requires Git and qemu-dev-env sources. Rendering requ
 ## Scope and companions
 
 Make a target repository usable inside a disposable Fedora CoreOS QEMU VM using
-`tdesaules/qemu-dev-env`. Deliver the integration, shareable project configuration,
-onboarding commands and evidence of what actually works. These are the user's
+`tdesaules/qemu-dev-env` as a Git submodule at `.devenv`, following the integration
+used in `thales-genai-lab`. Configure `.devenv/config.k` locally from the submodule's
+`exemple.config.k`, include its Taskfile under `devenv:`, and expose appropriate
+root tasks. Deliver that integration in the existing target repository, with
+operating instructions and evidence of what actually works. These are the user's
 development conventions, not universal QEMU requirements. Respect explicit target
 repository overrides. Do not substitute Nix, a devcontainer or a generic VM manager.
 
@@ -46,15 +50,17 @@ vendor its implementation or promise compatibility with every future revision.
    Read its Taskfile, schema, renderer and templates, not only its README. Record
    URL, commit and local modifications. Never copy its personal `config.k`, `.uuid`,
    `.task`, rendered configuration or VM disk into the target.
-3. Read [integration and distribution](references/integration.md). Pin the runtime
-   dependency; integrate Task without replacing existing commands. Preserve the
+3. Read [submodule integration](references/integration.md). Add or initialize the
+   `.devenv` Git submodule and record its commit in the parent; integrate Task
+   without replacing existing commands. Preserve the
    internal `taskfile.qemu.yaml` name and verify target-root sharing independently
-   of the runtime's working directory. Deliver fresh-clone setup and update steps.
+   of the runtime's working directory. Document submodule initialization and updates.
 4. Read [project configuration](references/configuration.md). Derive packages,
    tool versions, hardware and optional services from the project. Keep the
-   shareable recipe in target Git and the instantiated `config.k` user-owned.
-   Adapt the [minimal recipe](assets/project.config.k), initializing only when
-   absent. Do not copy demo services or personal host paths.
+   configuration in `.devenv/config.k`, ignored by the submodule and user-owned.
+   Initialize from `.devenv/exemple.config.k` only when absent, then adapt it to
+   the project. Do not retain irrelevant demo services or personal host paths.
+   A separate tracked recipe or config generator is optional, only when requested.
 5. Read [validation and lifecycle](references/validation.md) before rendering or
    operating a VM. Validate paths, stable identity, both KCL argument sets and
    generated files before launch. Run a noninteractive startup when VM execution
@@ -65,16 +71,17 @@ vendor its implementation or promise compatibility with every future revision.
    and identity on reruns; use `stop` for routine shutdown, `down` for disposal.
 7. Review the diff and run applicable checks. Report render validation, host checks,
    VM startup, provisioning and project smoke tests as separate evidence. Commit
-   the integration according to the target's policy, including the dependency pin
-   and shareable configuration, not local runtime state.
+   the integration according to the target's policy, including `.gitmodules`, the
+   submodule gitlink, root tasks and docs, not local config or runtime state.
 
 ## Deliverable contract
 
 A completed integration includes:
 
-- An obtainable, pinned runtime dependency with its license and provenance.
-- A project recipe with required tools/resources and no personal credentials.
-- A documented, non-overwriting initialization path and runnable lifecycle entrypoints.
+- A `.devenv` Git submodule with its URL and recorded commit in the parent repository.
+- A local `.devenv/config.k` adapted to required tools/resources, kept out of Git.
+- Task integration under `devenv:` and project-appropriate root lifecycle entrypoints.
+- Documented non-overwriting configuration setup and explicit submodule updates.
 - Correct target-root sharing, stable per-checkout identity and scoped ignore rules.
 - A guest build/test or service smoke command based on the project's own interface.
 - Validation results and precise unresolved host/runtime prerequisites.

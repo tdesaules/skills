@@ -19,7 +19,7 @@ and validator unit tests are independent evidence described in the review report
 
 The new `devenv` cases specify integration, path/identity failures, provisioning
 diagnosis and platform/companion boundaries; model and activation runs are pending.
-Its bundled KCL recipe was rendered against qemu-dev-env commit
+An initial bundled KCL recipe was rendered against qemu-dev-env commit
 `c60632ccee08750adc5c6531efccfbaee9a06eae` with KCL 0.13.3 and Butane 0.29.0.
 Linux/x86_64 and Darwin/aarch64 parameter sets passed strict Butane conversion and
 assertions for identity, hardware, shared project path, users and mount units.
@@ -27,6 +27,10 @@ These were isolated render checks on Linux, not native boots: a module-local HOM
 and dummy firmware option were necessary after the initial unmodified firmware
 probe failed KCL's module-root filesystem restriction. Real-host compatibility
 remains to be resolved; no VM readiness or behavioral improvement is claimed.
+That standalone recipe was subsequently removed to follow the user's
+`thales-genai-lab` pattern: Git submodule `.devenv`, local config.k initialized from
+the upstream exemple.config.k, and root Task integration. The earlier render checks
+do not qualify a target's adapted config.k; validate that configuration separately.
 
 ## Run a comparison
 
