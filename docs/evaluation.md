@@ -1,6 +1,6 @@
 # Evaluation workflow
 
-The seven `evals/evals.json` files contain behavioral prompts and six activation
+The eight `evals/evals.json` files contain behavioral prompts and six activation
 queries each. GitHub Actions has eleven behavioral cases, including multi-workflow routing,
 prepare/tag separation, maintenance isolation, qualification evidence and advisory
 security failures and needs-based runtime selection; other
@@ -14,6 +14,19 @@ fixture setup instructions, especially for Git tests.
 These initial cases have been syntax-checked, not run as a model benchmark.
 No activation rate or output-quality improvement is claimed. Structural validation
 and validator unit tests are independent evidence described in the review report.
+
+### devenv template checks
+
+The new `devenv` cases specify integration, path/identity failures, provisioning
+diagnosis and platform/companion boundaries; model and activation runs are pending.
+Its bundled KCL recipe was rendered against qemu-dev-env commit
+`c60632ccee08750adc5c6531efccfbaee9a06eae` with KCL 0.13.3 and Butane 0.29.0.
+Linux/x86_64 and Darwin/aarch64 parameter sets passed strict Butane conversion and
+assertions for identity, hardware, shared project path, users and mount units.
+These were isolated render checks on Linux, not native boots: a module-local HOME
+and dummy firmware option were necessary after the initial unmodified firmware
+probe failed KCL's module-root filesystem restriction. Real-host compatibility
+remains to be resolved; no VM readiness or behavioral improvement is claimed.
 
 ## Run a comparison
 

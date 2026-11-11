@@ -13,6 +13,7 @@ see [LICENSE](LICENSE).
 | [commit](commit/SKILL.md) | Proactive local commits, required why-body, unpublished history; requires conventionalcommits |
 | [conventionalcommits](conventionalcommits/SKILL.md) | Message types, scopes, breaking changes; no Git mutation |
 | [container](container/SKILL.md) | OCI builds, Compose, Quadlet, runtime diagnosis |
+| [devenv](devenv/SKILL.md) | Repository-local QEMU/Fedora CoreOS development environments, project configuration, lifecycle and onboarding |
 | [github-actions](github-actions/SKILL.md) | Separate CI/release/maintenance workflows, dedicated Docker actions, allowlisted runtime bases, GHCR releases |
 | [helm](helm/SKILL.md) | Charts, values, templates, dependencies, releases |
 | [skill](skill/SKILL.md) | Portable skill authoring, validation, evaluation |
@@ -58,6 +59,9 @@ directly; that does not test automatic activation.
 Install `commit` and `conventionalcommits` together: the companion is required,
 not an optional message-format fallback. When using the collection's image policy,
 also make `container` available to `helm` and `github-actions`.
+For `devenv`, provide `container` when adding guest containers and `chezmoi` when
+changing managed host networking; Git work uses `commit` with `conventionalcommits`.
+The qemu-dev-env runtime is an external pinned dependency, not bundled with the skill.
 
 ### Migration from `opencode/`
 
