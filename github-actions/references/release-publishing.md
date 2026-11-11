@@ -2,15 +2,16 @@
 
 ## Establish policy
 
-Apply the repository contract from SKILL.md: main.yml with six jobs, branch/tag
-push, main-only manual preparation, and maintenance-only schedules; no PR trigger
-unless requested. Route manual maintenance separately. Publish catalog images to
+Apply the repository contract from SKILL.md: main.yml for branch-push CI,
+release.yml for tag pushes and main-only manual preparation, and maintenance.yml
+for schedules and main-only manual maintenance; no PR trigger unless requested.
+Keep the complete qualification chain inside release execution. Publish catalog images to
 ghcr.io/tdesaules/github-actions/<image>. Use global catalog SemVer tags without a
 v prefix for Git/GitHub Releases; no catalog SemVer/latest aliases for images.
 Validate SemVer separately from tag globs. These are user conventions, not platform
 requirements; preserve explicit user/repository overrides.
 
-Use the six-job contract linked from SKILL.md for dispatch modes, needs, outputs
+Use the workflow contract linked from SKILL.md for event routing, needs, outputs
 and gates. Prepare mode builds changed images and qualifies the complete intended
 release set, including reused digests. Tag mode skips build, tests the complete
 published set, then verifies/publishes the GitHub Release. A no-bump preparation

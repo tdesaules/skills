@@ -2,7 +2,7 @@
 name: github-actions
 description: >-
   Use when creating, reviewing, or debugging GitHub Actions workflows or action.yml:
-  main.yml orchestration, changed-file matrices, dedicated Docker actions with
+  CI/release/maintenance orchestration, changed-file matrices, dedicated Docker actions with
   allowlisted runtime bases, GHCR publication, and release routing. Apply the user's catalog
   and Pantavisor CI conventions. Not for standalone Containerfiles, generic Git
   operations, or GitLab CI.
@@ -30,11 +30,14 @@ routing and syntax checks remain independently usable.
 
 ## Repository contract
 
-- Use one `.github/workflows/main.yml`, named `main`, with exactly six jobs:
-  `check`, `lint`, `build`, `test`, `release`, `maintenance`. Detection and matrix
-  outputs come from `check`; keep construction and qualification separate.
-- Trigger branch/tag `push`, manual preparation on `main` via `workflow_dispatch`,
-  and scheduled maintenance. No `pull_request` trigger unless requested. Permit
+- Use three entry workflows: `main.yml` (name `main`) for branch pushes with
+  `check`, `lint`, `build`, `test`; `release.yml` (name `release`) for tag pushes
+  and manual preparation with `check`, `lint`, `build`, `test`, `release`;
+  `maintenance.yml` (name `maintenance`) for schedules/manual maintenance with
+  only `maintenance`. Detection and matrix outputs come from each chain's `check`;
+  keep construction and qualification separate and release qualification self-contained.
+- Require manual preparation and manual maintenance on `main` via their respective
+  `workflow_dispatch` entrypoints. No `pull_request` trigger unless requested. Permit
   direct pushes to `main`; force-push protection belongs to repository settings.
 - Development selects work from changes; release verifies the complete release
   set rather than only the push diff; schedules run maintenance only. Route manual
@@ -91,16 +94,18 @@ routing and syntax checks remain independently usable.
   engine launchers, socket mounts, privileged mode, extra capabilities, or daemon changes.
 - Use composites to assemble `uses:` calls only when that reuse is needed; do not
   hide individual checks in a dispatcher. Reusable workflows delegate whole jobs
-  only when requested. A job container requires a genuine whole-job environment.
+  only when requested, including optional shared CI/release qualification; preserve
+  explicit outputs and release gates across that boundary. A job container requires
+  a genuine whole-job environment.
 - Outside this catalog contract, an explicitly chosen Podman/Python composite can
   be valid GitHub syntax. Distinguish that validity from compliance with this policy.
 - If bootstrap requires temporary bridges, document their removal condition and
   finish activation after publication. A green transitional CI is not completion.
 
-## Six-job execution contract
+## Workflow execution contract
 
 Read [the job contract](references/job-contract.md) when creating or changing
-main.yml, job conditions, outputs, or release routing. It defines the required
+any of the three workflows, job conditions, outputs, or release routing. It defines the required
 event matrix, needs graph, output names, artifacts, and success criteria.
 
 | Job | Responsibility | needs |
@@ -111,6 +116,10 @@ event matrix, needs graph, output names, artifacts, and success criteria.
 | `test` | Test exact candidates or published digests, generate SBOMs and scans | `check`, `lint`, `build` |
 | `release` | Prepare images/references/tag, or verify a tag and publish the GitHub Release | `check`, `lint`, `build`, `test` |
 | `maintenance` | Scheduled/manual Renovate, rescans and link checks, independently | none |
+
+The first four jobs belong to both main and release; `release` belongs only to
+release.yml and `maintenance` only to maintenance.yml. `needs` stays within each
+workflow; never use a successful development run as release qualification.
 
 Require every selected dependency to succeed. A skipped dependency is acceptable
 only when check explicitly declared that phase empty. Tags never rebuild images;
@@ -132,7 +141,7 @@ blocking. `tested: true` means functional qualification, not security approval.
 2. Apply the repository contract and agreed exceptions. Inventory actual source
    languages and scripts, including extensionless files; do not prescribe checks
    for nonexistent inputs. Resolve consequential missing runner/credential inputs.
-3. Implement the six-job execution contract, keeping routing, dependencies,
+3. Implement the three-workflow execution contract, keeping routing, dependencies,
    conditions, matrices and permissions visible. Discover components from source, action metadata
    and build dependencies; do not add a central catalog manifest/lockfile or
    catalog-level `catalog/`, `config/`, `security/` trees. Keep tool config at the root.
@@ -186,7 +195,7 @@ Test relevant cases: empty matrices, missing history, renames/deletions, shared
 dependencies, skipped and failed jobs, invalid inputs, filenames with spaces,
 artifact ownership, partial retries, and release races. Keep reports on failures.
 
-Audit all six jobs for business-operation `run:` steps and temporary bridges.
+Audit all jobs across the three workflows for business-operation `run:` steps and temporary bridges.
 Inspect every action's actual runtime, dedicated multistage recipe, allowed bases and
 native variants. Test artifact pagination and exclude private signing material.
 

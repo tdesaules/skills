@@ -1,8 +1,16 @@
-# Six-job CI contract
+# CI, release and maintenance workflow contract
 
-Apply this contract to the user's repositories covered by SKILL.md. Keep exactly
-six job IDs in `.github/workflows/main.yml`, workflow name `main`. Matrix instances
-do not add job IDs. Implement business operations with dedicated Docker actions,
+Apply this contract to the user's repositories covered by SKILL.md. Use three
+entry workflows under `.github/workflows/`:
+
+| File / workflow name | Jobs | Triggers |
+| --- | --- | --- |
+| `main.yml` / `main` | `check`, `lint`, `build`, `test` | Branch pushes only |
+| `release.yml` / `release` | `check`, `lint`, `build`, `test`, `release` | Tag pushes and manual preparation |
+| `maintenance.yml` / `maintenance` | `maintenance` | Schedules and manual maintenance |
+
+Use explicit branch/tag push filters so a tag cannot also start development CI.
+Matrix instances do not add job IDs. Implement business operations with dedicated Docker actions,
 retaining the documented infrastructure/Buildah exceptions. Do not invent action
 paths, versions, digests, credentials or runner labels to fill a template.
 
@@ -12,19 +20,31 @@ from functional job success; no security-only outcome blocks CI or publication.
 
 ## Event routing
 
-Use a required `workflow_dispatch` choice input `mode` with `prepare` (default) and
-`maintenance`. Both manual modes require `refs/heads/main`; reject another ref
+Manual dispatch of release.yml selects `prepare`; manual dispatch of maintenance.yml
+selects maintenance. No shared dispatch mode selector is needed. Both require
+`refs/heads/main`; reject another ref
 with an explicit failure in the selected entry job, not a silently green all-skipped
 run. A schedule uses the default branch and runs maintenance only. No PR trigger.
 Validate tags as SemVer without `v`; reject disallowed prereleases per release policy.
 
-| Event | check | lint | build | test | release | maintenance |
+| Event (owning workflow) | check | lint | build | test | release | maintenance |
 | --- | --- | --- | --- | --- | --- | --- |
-| Branch push | Plan changed work (`development`) | Selected checks | Changed images | Selected candidates/published images | Skip | Skip |
-| Dispatch prepare on main | Plan release (`prepare`) | Full applicable catalog checks | Images changed since prior release | Complete intended release set | Prepare, only if version bump | Skip |
-| Valid tag push | Validate tag/catalog (`publish`) | Full applicable catalog checks | Skip | Complete release set at published digests | Verify/publish GitHub Release | Skip |
-| Schedule | Skip | Skip | Skip | Skip | Skip | All maintenance operations |
-| Dispatch maintenance on main | Skip | Skip | Skip | Skip | Skip | All maintenance operations |
+| Branch push (`main`) | Plan changed work (`development`) | Selected checks | Changed images | Selected candidates/published images | — | — |
+| Dispatch on main (`release`) | Plan release (`prepare`) | Full applicable catalog checks | Images changed since prior release | Complete intended release set | Prepare, only if version bump | — |
+| Valid tag push (`release`) | Validate tag/catalog (`publish`) | Full applicable catalog checks | Skip | Complete release set at published digests | Verify/publish GitHub Release | — |
+| Schedule (`maintenance`) | — | — | — | — | — | All maintenance operations |
+| Dispatch on main (`maintenance`) | — | — | — | — | — | All maintenance operations |
+
+An em dash means the job is absent from that workflow, not skipped. `needs` cannot
+cross workflow runs. Release owns its full qualification chain and artifacts; do
+not add a workflow_run handoff or consume development artifacts as release evidence.
+If shared qualification is explicitly requested, a workflow_call implementation
+may contain check/lint/build/test. Expose the plan flags, immutable source and
+artifact names through workflow outputs; the release caller must validate both
+the call result and complete evidence. Do not reference callee jobs in caller needs,
+and do not infer success of selected phases from a successful wrapper alone.
+Pass only required permissions/secrets; keep publication and maintenance outside
+the shared qualification workflow.
 
 For development: docs-only changes run appropriate docs checks, metadata-only
 changes test existing image digests, scan-policy-only changes scan existing digests
@@ -183,9 +203,9 @@ ownership, or inconsistent flags/matrices. Use the same selector for reuse check
 
 ## maintenance
 
-- **Inputs:** schedule or explicit mode=maintenance on main, current catalog image
+- **Inputs:** schedule or manual dispatch of maintenance.yml on main, current catalog image
   digests, dependency configurations, shared bot App credentials and scan policy.
-  No needs: this job must not depend on the five intentionally skipped jobs.
+  No needs: this job is the sole job in its independent workflow.
 - **Work:** validate its own ref/mode, run containerized Renovate, refresh vulnerability
   data and rescan published native images with Syft/Grype, and check external links.
   Run independent operations even if another fails, then aggregate their status;

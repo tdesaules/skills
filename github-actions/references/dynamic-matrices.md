@@ -1,6 +1,6 @@
 # Change selection and dynamic matrices
 
-The six-job contract linked from SKILL.md defines output names and routing. Here
+The workflow contract linked from SKILL.md defines output names and routing. Here
 `has_images` means nonempty build_matrix; separate has_lint/has_tests flags gate
 lint_matrix/test_matrix. Tag validation selects published-image tests, never builds.
 
@@ -85,7 +85,9 @@ exceptions; avoid filtering out events needed to compute the selection.
 
 ## Separate construction and qualification
 
-Keep check, lint, build, test, release, maintenance in the single main.yml workflow.
+Keep check/lint/build/test in main.yml and in release.yml, with release only in
+release.yml. Keep maintenance alone in maintenance.yml. Each qualification chain
+owns its plan and artifacts; do not pass needs across workflows.
 Derive selection before checks, pass outputs from check, and keep build/test as
 separate jobs with bounded, non-fail-fast native AMD64/ARM64 matrices.
 

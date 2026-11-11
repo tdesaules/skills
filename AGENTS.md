@@ -15,7 +15,7 @@
 - `commit` owns Git mutation; `conventionalcommits` owns message semantics.
   Commit proactively by default, load conventionalcommits first, and include a why-body.
 - Agent portability does not mean removing user conventions. Preserve the GitHub
-  Actions main.yml/six-job/Docker/Grype contract and the container allowlist.
+  Actions CI/release/maintenance workflow split, Docker/Grype contract and the container allowlist.
   Prefer scratch where suitable; complete runtime environments may use other allowed bases.
 - Security reporting in GitHub Actions is advisory, including tool/signature errors;
   keep functional tests and exact-artifact/publication failures blocking.

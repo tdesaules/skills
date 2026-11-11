@@ -13,7 +13,7 @@ see [LICENSE](LICENSE).
 | [commit](commit/SKILL.md) | Proactive local commits, required why-body, unpublished history; requires conventionalcommits |
 | [conventionalcommits](conventionalcommits/SKILL.md) | Message types, scopes, breaking changes; no Git mutation |
 | [container](container/SKILL.md) | OCI builds, Compose, Quadlet, runtime diagnosis |
-| [github-actions](github-actions/SKILL.md) | Personal main.yml/six-job CI contract, dedicated Docker actions, allowlisted runtime bases, GHCR releases |
+| [github-actions](github-actions/SKILL.md) | Separate CI/release/maintenance workflows, dedicated Docker actions, allowlisted runtime bases, GHCR releases |
 | [helm](helm/SKILL.md) | Charts, values, templates, dependencies, releases |
 | [skill](skill/SKILL.md) | Portable skill authoring, validation, evaluation |
 
@@ -23,12 +23,12 @@ images are checked through their recipes/provenance rather than renamed to base
 images. See [the policy](container/SKILL.md#base-image-allowlist) for exact repositories.
 
 Agent portability preserves personal repository conventions. `github-actions`
-retains the main.yml/six-job layout, no PR trigger by default, dedicated Go/Docker
+uses separate main.yml/release.yml/maintenance.yml workflows, no PR trigger by default, dedicated Go/Docker
 actions with needs-based allowlisted runtimes, advisory Grype reporting, no-v Git tags, and the personal
 GHCR namespace. These are project choices, not Agent Skills or GitHub requirements.
 Prefer scratch where suitable; actions requiring a complete environment may use
 another base from the container allowlist without a tool-specific exception.
-The [six-job contract](github-actions/references/job-contract.md) defines event
+The [workflow contract](github-actions/references/job-contract.md) defines event
 routing, dependencies, inputs/outputs, artifacts, and success criteria per job.
 The [security policy](github-actions/references/security-policy.md) keeps SBOMs,
 scans, advisory reviews, signing and signature verification non-blocking, with
@@ -104,7 +104,7 @@ This upstream installation requires Python 3.11+, Git, and initial network acces
 ## Evaluate
 
 Every skill has `evals/evals.json`: behavioral cases and six labeled activation
-queries, including near-misses. GitHub Actions also covers the six-job contract's
+queries, including near-misses. GitHub Actions also covers the workflow contract's
 routing, release phases, maintenance isolation and artifact gates. These are **test specifications**, not
 published benchmark results. Follow [the evaluation guide](docs/evaluation.md)
 for fresh-session runs, baselines, grading, and description optimization.
