@@ -1,7 +1,8 @@
 # Allowlisted Containerfile patterns
 
-Apply the base-image allowlist in this skill's SKILL.md to every stage and external
-image source. Examples below are illustrative, not prequalified artifacts. Replace
+Apply the runtime allowlist in this skill's SKILL.md to the produced runtime target.
+Build-only stages and external donor images need not use an allowlisted repository.
+Examples below are illustrative, not prequalified artifacts. Replace
 `<tag>` and `<digest>` with verified values (`<digest>` includes `sha256:`). Check
 package/runtime versions against the project's requirements before building.
 

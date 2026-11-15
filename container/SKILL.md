@@ -18,10 +18,11 @@ engine; default to rootless Podman when choosing a new one. Detect tool versions
 and the Compose provider before using engine-specific flags. Do not replace a
 working Docker/containerd setup solely to apply a preference.
 
-## Base-image allowlist
+## Produced-image runtime allowlist
 
-Use only these base repositories for new or changed image builds, in **every
-stage**, including builders, development, test, and runtime stages:
+Apply this list to the **final runtime of each image produced for use or
+publication**, not to every image consumed during its construction. Builders,
+tool donors and image-backed build mounts may use other repositories.
 
 | Allowed base | Reference |
 | --- | --- |
@@ -38,21 +39,29 @@ not registry-wide prefixes; tags/digests must resolve within the allowed reposit
 Use `FROM scratch` literally: it is an empty base, not a pullable/tagged image.
 Resolve supported tags, digests and architectures rather than assuming availability.
 
-Install required toolchains/runtimes into an allowed base instead of using official
-language images or distroless. Choose scratch for a verified static closure; otherwise
-select an allowed base with compatible libc, packages, and runtime dependencies.
-Full Fedora is allowed when build/debug needs justify it. Micro images may lack a
-package manager: assemble their runtime closure in a compatible build stage.
+For example, a pinned `golang` builder or a `quay.io/buildah/stable` donor followed
+by `FROM scratch` is permitted by this policy. Do not reject a recipe merely
+because an intermediate `FROM`, external `COPY --from=<image>`, or build mount
+uses a repository absent from the list. Still verify artifact bytes, architectures,
+ABI/library closure and required licenses.
 
-Check external `COPY --from=<image>` and image-backed mounts too; do not bypass the
-list with an unapproved donor image. Named local stages may inherit approved stages.
-For project-derived images, verify the recipe/provenance resolves to allowed bases.
+Identify the delivered target first: normally the last stage, or an explicitly
+selected `--target`. A builder exported as the deliverable becomes a runtime target
+and must meet the list. Follow named-stage inheritance when identifying that
+target's runtime base. Internal build-cache images are not deliverables.
 
-The list governs bases, not the names of resulting application images. Compose,
-Quadlet, Helm workloads and prebuilt CI tools still need their application software.
-Do not substitute a bare base for PostgreSQL or a linter. Report existing unlisted
-bases or unknown provenance; propose a compatible rebuild rather than silently
-treating them as approved. Only an explicit user exception can widen this list.
+Choose scratch for a verified static closure; otherwise select an allowed runtime
+with compatible libc, packages and dependencies. A produced development/debug
+image may legitimately retain a toolchain, using an allowed final runtime.
+Micro runtimes may need their files assembled in a separate build stage.
+
+The list does not restrict the repository names assigned to produced application
+images. For project-derived runtimes or prebuilt CI tools, check the delivered
+runtime's provenance, not whether every historical builder/donor used an allowed
+repository. Do not substitute a bare base for PostgreSQL or a linter. Report an
+unapproved delivered runtime or unknown runtime provenance precisely; do not
+misclassify a build-only source image. Only an explicit user exception can widen
+the list of final runtimes.
 
 ## Workflow
 
@@ -60,9 +69,9 @@ treating them as approved. Only an explicit user exception can widen this list.
    app startup behavior. Identify platforms, dynamic libraries, interpreter, TLS
    roots, timezone data, filesystem writes, and health endpoints.
 2. Classify the actual task and preserve working interfaces. For builds, choose
-   the smallest allowed base that satisfies those requirements; apply the allowlist
-   to build stages and external image sources as well as the runtime.
-   A dev/debug image may legitimately retain a toolchain.
+   the smallest allowed final runtime that satisfies those requirements. Distinguish
+   delivered targets from build-only stages and donor images before applying the
+   allowlist; builders and donors are not constrained by that list.
 3. Write named build stages; install dependencies from lockfiles before copying
    source. Keep build-only tooling and credentials out of the runtime. Use secret
    mounts rather than secret ARG/ENV/COPY instructions.

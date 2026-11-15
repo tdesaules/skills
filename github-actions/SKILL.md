@@ -60,7 +60,10 @@ routing and syntax checks remain independently usable.
   a complete distribution environment. Do not force manual reconstruction of that
   environment inside scratch. Explain the choice from actual runtime needs; this
   is the general selection rule, not a per-tool exception. Apply the allowlist to
-  every stage and external donor image, and retain required configuration/licenses.
+  the produced action image's final runtime, not to build-only stages or external
+  donor images. A Go builder or Buildah/tool donor followed by an allowed runtime
+  such as scratch does not violate that list. Verify copied runtime dependencies
+  and retain required configuration/licenses.
 - Released actions use `runs.using: docker` and verified `docker://...@sha256:...`
   references. Invoke operations with named, direct `uses:` steps; keep conditions,
   matrices, permissions and artifact transfer visible. Host Python, `docker run`,

@@ -13,9 +13,11 @@ allowed, but each public action owns its executable/image; do not expose an
 arbitrary command or operation selector. CLI flags override explicitly forwarded
 INPUT_* values, then documented defaults.
 
-Use the companion container skill's base-image allowlist for all stages and external
-image sources; verify the ancestry of prebuilt action images. Build in multiple
-stages and prefer scratch when the executable and complete runtime closure fit it.
+Use the companion container skill's allowlist for the final runtime of each produced
+action image. Build-only stages and external donors may use other repositories;
+do not reject an action for a Go builder or tool-donor base alone. Verify the
+delivered runtime's provenance. Build in multiple stages and prefer scratch when
+the executable and complete runtime closure fit it.
 For interpreters, libraries, build tools or a full distribution environment, choose
 a compatible allowlisted runtime rather than forcing that environment into scratch.
 Document the actual dependency requirements behind the choice; no tool-specific
