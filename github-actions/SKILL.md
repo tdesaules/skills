@@ -16,8 +16,8 @@ compatibility: Local validation requires actionlint; hosted execution and public
 
 Design workflow orchestration and action interfaces using the user's repository
 conventions below. They are deliberate project policy, not GitHub or Agent Skills
-requirements. Apply them to `tdesaules/github-actions`, the user's shared action
-catalogs, and Pantavisor projects unless the user or repository instructions
+requirements. Apply them to the shared catalog (`tdesaules/github-actions`) and
+its consumers, including Pantavisor projects, unless the user or repository instructions
 explicitly override them. Do not generalize away these conventions for portability.
 
 When selecting, building, or reviewing container images, consult the companion
@@ -42,8 +42,10 @@ routing and syntax checks remain independently usable.
 - Development selects work from changes; release verifies the complete release
   set rather than only the push diff; schedules run maintenance only. Route manual
   maintenance separately so it cannot enter release preparation.
-- Host catalog sources at `https://github.com/tdesaules/github-actions`; publish
-  dedicated images to `ghcr.io/tdesaules/github-actions/<image>`. The repository's
+- Define and maintain all custom actions exclusively in `https://github.com/tdesaules/github-actions`,
+  even if only one project uses them. Consumer workflows reference them with
+  `uses: tdesaules/github-actions/<path>@<ref>`; never create or copy an action into a consumer repository.
+- Publish dedicated images to `ghcr.io/tdesaules/github-actions/<image>`. The repository's
   `/actions` page is the execution UI, not the image registry.
 - Give each specialized operation its own directory, `action.yml`, `Containerfile`,
   fixed-operation Go executable, README, and tests. Put linters under `lint/<linter>/`.
